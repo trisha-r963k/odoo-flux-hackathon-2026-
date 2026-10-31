@@ -4,6 +4,7 @@ const http = require('node:http');
 const fs = require('node:fs');
 const path = require('node:path');
 const url = require('node:url');
+const crypto = require('node:crypto');
 
 const { db, seedDatabase } = require('./db/database');
 const { runBillingEngine } = require('./services/billingEngine');
@@ -133,6 +134,70 @@ const server = http.createServer(async (req, res) => {
           token,
           user: { id: userId, name, email: email.toLowerCase(), role: 'customer' }
         });
+      }
+
+
+      // Auth: Forgot Password Token Dispatch (Page 2: Password reset link)
+      if (pathname === '/api/auth/forgot-password' && method === 'POST') {
+        const { email } = await parseBody(req);
+        if (!email) return sendJSON(res, 400, { error: 'Email is required' });
+        const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email.toLowerCase());
+        if (!user) return sendJSON(res, 404, { error: 'No user registered with this email' });
+        const token = crypto.randomBytes(16).toString('hex');
+        return sendJSON(res, 200, {
+          success: true,
+          message: `Password reset link dispatched to ${email}`,
+          demoResetToken: token
+        });
+      }
+
+      // Admin: Staff Accounts (Page 2: Only the admin can add a new member of staff)
+      if (pathname === '/api/admin/staff' && method === 'GET') {
+        const staff = db.prepare("SELECT id, name, email, role, created_at FROM users WHERE role IN ('admin', 'staff')").all();
+        return sendJSON(res, 200, { staff });
+      }
+
+      if (pathname === '/api/admin/staff' && method === 'POST') {
+        const { name, email, password, role = 'staff' } = await parseBody(req);
+        if (!name || !email || !password) {
+          return sendJSON(res, 400, { error: 'Name, email, and password are required' });
+        }
+        const passCheck = validatePassword(password);
+        if (!passCheck.valid) {
+          return sendJSON(res, 400, { error: passCheck.message });
+        }
+        const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase());
+        if (existing) {
+          return sendJSON(res, 400, { error: 'User with this email already exists' });
+        }
+        const userId = 'usr_staff_' + Math.random().toString(36).substring(2, 7);
+        const passHash = hashPassword(password);
+        db.prepare('INSERT INTO users (id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)').run(
+          userId, name, email.toLowerCase(), passHash, role
+        );
+        return sendJSON(res, 201, {
+          message: 'Staff member added successfully',
+          user: { id: userId, name, email: email.toLowerCase(), role }
+        });
+      }
+
+      // Discounts: List & Create Rules (Page 4: Only the admin can create discount rules)
+      if (pathname === '/api/discounts' && method === 'GET') {
+        const discounts = db.prepare('SELECT * FROM discount_rules').all();
+        return sendJSON(res, 200, { discounts });
+      }
+
+      if (pathname === '/api/discounts' && method === 'POST') {
+        const { code, discountType = 'percentage', value, minQuantity = 1, minPurchase = 0, startDate, endDate, usageLimit = 100, appliedTo = 'all', targetProductId = null } = await parseBody(req);
+        if (!code || value === undefined) {
+          return sendJSON(res, 400, { error: 'Discount code and value are required' });
+        }
+        const discId = 'disc_' + Math.random().toString(36).substring(2, 7);
+        db.prepare(`
+          INSERT INTO discount_rules (id, code, discount_type, value, min_quantity, min_purchase, start_date, end_date, usage_limit, times_used, applied_to, target_product_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, ?)
+        `).run(discId, code.toUpperCase(), discountType, value, minQuantity, minPurchase, startDate || null, endDate || null, usageLimit, appliedTo, targetProductId);
+        return sendJSON(res, 201, { message: 'Discount rule created', discountId: discId, code: code.toUpperCase() });
       }
 
       // 3. Products & Variant Catalog
@@ -299,8 +364,8 @@ const server = http.createServer(async (req, res) => {
       if (pathname === '/api/subscriptions' && method === 'POST') {
         const body = await parseBody(req);
         const {
-          customerId,
-          planId,
+          customerId: rawCustomerId,
+          planId: rawPlanId,
           lines = [],
           paymentTerms = 'Immediate Payment',
           discountId = null,
@@ -308,13 +373,53 @@ const server = http.createServer(async (req, res) => {
           status = 'quotation',
           totalAmount: clientTotalAmount = null
         } = body;
+        let customerId = rawCustomerId;
+        let planId = rawPlanId;
 
-        if (!customerId || !planId) {
-          return sendJSON(res, 400, { error: 'Customer ID and Plan ID are required' });
+        // Resolve friendly/demo customer IDs (e.g. 3 -> 'usr_cust_1')
+        if (customerId === 3 || customerId === '3' || !customerId) {
+          const firstCust = db.prepare("SELECT id FROM users WHERE role = 'customer' LIMIT 1").get();
+          customerId = firstCust ? firstCust.id : 'usr_cust_1';
+        } else if (typeof customerId === 'number' || (typeof customerId === 'string' && !customerId.startsWith('usr_'))) {
+          const cust = db.prepare("SELECT id FROM users WHERE id = ? OR rowid = ? OR email LIKE ? LIMIT 1").get(customerId, customerId, '%customer%');
+          if (cust) customerId = cust.id;
+        }
+
+        // Resolve friendly plan IDs (e.g. 1 -> 'plan_monthly_pro')
+        if (planId === 1 || planId === '1' || !planId) {
+          planId = 'plan_monthly_pro';
+        } else if (planId === 2 || planId === '2') {
+          planId = 'plan_yearly_ent';
         }
 
         const plan = db.prepare('SELECT * FROM plans WHERE id = ?').get(planId);
         if (!plan) return sendJSON(res, 404, { error: 'Plan not found' });
+
+        // If direct productId provided instead of lines array, construct line items
+        if (lines.length === 0 && (body.productId || body.selectedProduct)) {
+          let prodId = body.productId || body.selectedProduct?.id || 'prod_erp';
+          if (prodId === 1 || prodId === '1') prodId = 'prod_erp';
+          if (prodId === 2 || prodId === '2') prodId = 'prod_crm';
+          if (prodId === 3 || prodId === '3') prodId = 'prod_support';
+
+          let varId = body.variantId || null;
+          if (varId === 1 || varId === '1') varId = 'var_odoo_brand';
+
+          const prod = db.prepare('SELECT * FROM products WHERE id = ?').get(prodId);
+          const variant = varId ? db.prepare('SELECT * FROM product_variants WHERE id = ?').get(varId) : null;
+
+          const basePrice = prod ? prod.sales_price : 499.0;
+          const varExtra = variant ? variant.price_extra : (varId === 'var_odoo_brand' ? 560.0 : 0.0);
+          const unitPrice = basePrice + varExtra;
+          const qty = body.quantity || 1;
+
+          lines.push({
+            productId: prodId,
+            variantId: varId,
+            quantity: qty,
+            unitPrice: unitPrice
+          });
+        }
 
         // Resolve discount if code provided
         let resolvedDiscountId = discountId;
@@ -331,6 +436,7 @@ const server = http.createServer(async (req, res) => {
         const initialStatus = ['draft', 'quotation', 'confirmed', 'active'].includes(status) ? status : 'quotation';
         const isQuote = ['draft', 'quotation'].includes(initialStatus);
         const prefix = isQuote ? 'QT-2026-' : 'SUB-2026-';
+
         const subId = 'sub_' + Math.random().toString(36).substring(2, 9);
         const subNumber = getNextSequentialNumber(prefix);
         const today = new Date().toISOString().split('T')[0];

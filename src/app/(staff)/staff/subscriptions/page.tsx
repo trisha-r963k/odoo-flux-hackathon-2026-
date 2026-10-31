@@ -21,6 +21,7 @@ import {
   Calendar,
   Layers,
   ChevronRight,
+  Receipt,
 } from 'lucide-react';
 
 interface SubscriptionItem {
@@ -168,7 +169,14 @@ export default function StaffSubscriptionsPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/staff/invoices"
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition flex items-center gap-1.5"
+          >
+            <Receipt className="w-3.5 h-3.5" />
+            <span>View Invoices</span>
+          </Link>
           <div className="text-right">
             <div className="text-xs font-bold text-slate-900">{session?.user?.name || 'Operations Staff'}</div>
             <div className="text-[11px] text-slate-500 font-mono">{session?.user?.email || 'staff@brightloop.com'}</div>
