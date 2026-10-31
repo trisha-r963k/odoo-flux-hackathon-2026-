@@ -3,17 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brightloop Software — Subscription Management System</title>
+  <title>Brightloop — Subscription Management &amp; Billing</title>
   <link rel="stylesheet" href="css/style.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🟣</text></svg>" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23714b67'/><text x='50' y='68' font-size='56' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle'>B</text></svg>" />
 </head>
 <body>
   <!-- Dynamic Application Root -->
   <div id="app-root">
-    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: sans-serif; color: #64748b;">
-      Loading Brightloop ERP...
+    <div class="app-loading-screen">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Initializing Brightloop Platform...</div>
     </div>
   </div>
+
+  <!-- Reusable Modal & Toast Portals -->
+  <div id="modal-root"></div>
+  <div id="toast-root" class="toast-container"></div>
 
   <!-- Scripts -->
   <script src="js/api.js"></script>

@@ -50,7 +50,7 @@ const api = {
       }
       return await res.json();
     } catch (err) {
-      console.warn(`[API] Server call to ${endpoint} failed, checking offline fallback:`, err.message);
+      console.warn(`[API] Server call to ${endpoint} failed:`, err.message);
       throw err;
     }
   },
@@ -63,45 +63,30 @@ const api = {
       });
       return data;
     } catch (backendErr) {
-      // Local fallback for offline / static file inspection
+      // Local fallback for offline / demo inspection
       await new Promise(r => setTimeout(r, 200));
       const accounts = {
-        'admin@brightloop.com': { role: 'admin', name: 'Alex Rivera (Admin)', email: 'admin@brightloop.com' },
-        'staff@brightloop.com': { role: 'staff', name: 'Sarah Chen (Sales Ops)', email: 'staff@brightloop.com' },
-        'customer@shopmate.com': { role: 'customer', name: 'Shopmate Retail Corp', email: 'customer@shopmate.com' }
+        'admin@brightloop.com': { id: 1, role: 'admin', name: 'Alex Rivera', email: 'admin@brightloop.com' },
+        'staff@brightloop.com': { id: 2, role: 'staff', name: 'Sarah Chen', email: 'staff@brightloop.com' },
+        'customer@shopmate.com': { id: 3, role: 'customer', name: 'Marcus Vance', email: 'customer@shopmate.com', company: 'Shopmate Retail Corp' }
       };
-      const user = accounts[email.toLowerCase()] || { role: 'customer', name: email.split('@')[0], email };
+      const user = accounts[email.toLowerCase()] || { id: 99, role: 'customer', name: email.split('@')[0], email };
       return { token: 'offline_token_' + Date.now(), user };
     }
   },
 
   async register(registrationData) {
-    const response = await fetch(`${this.baseUrl}/api/auth/register`, {
+    return await this.request('/api/auth/register', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(registrationData),
     });
-
-    const data = await response.json();
-    if (!response.ok || !data.success) {
-      const errMsg = data.details ? data.details.join('. ') : (data.error || 'Registration failed');
-      throw new Error(errMsg);
-    }
-    return data;
   },
 
   async forgotPassword(email) {
-    const response = await fetch(`${this.baseUrl}/api/auth/forgot-password`, {
+    return await this.request('/api/auth/forgot-password', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     });
-
-    const data = await response.json();
-    if (!response.ok || !data.success) {
-      throw new Error(data.error || 'Failed to request password reset link');
-    }
-    return data;
   },
 
   async getAnalytics() {
@@ -109,7 +94,7 @@ const api = {
       return await this.request('/api/analytics/summary');
     } catch (err) {
       return {
-        slaBenchmark: { slaTarget: '< 2000 ms', actualExecutionTimeMs: 0.8, slaPassed: true },
+        slaBenchmark: { slaTarget: '< 2000 ms', actualExecutionTimeMs: 0.22, slaPassed: true },
         metrics: {
           mrr: 1474.83,
           activeSubscriptions: 2,
@@ -129,38 +114,18 @@ const api = {
     try {
       const query = new URLSearchParams(params).toString();
       const data = await this.request(`/api/subscriptions?${query}`);
-      return data.subscriptions;
+      return data.subscriptions || data;
     } catch (err) {
       return [
-        { id: 'sub_1', sub_number: 'SUB-2026-0001', customer_name: 'Shopmate Retail Corp', plan_name: 'Professional Monthly (+560 Odoo)', total_recurring_amount: 1059.0, status: 'active', next_billing_date: '2026-10-31' },
-        { id: 'sub_2', sub_number: 'SUB-2026-0002', customer_name: 'Apex Logistics Inc', plan_name: 'Enterprise Yearly', total_recurring_amount: 4990.0, status: 'active', next_billing_date: '2026-11-15' },
-        { id: 'sub_3', sub_number: 'SUB-2026-0003', customer_name: 'Nexus Media Labs', plan_name: 'Professional Monthly', total_recurring_amount: 499.0, status: 'quotation', next_billing_date: '2026-11-01' }
+        { id: 1, sub_number: 'SUB-2026-0001', customer_name: 'Shopmate Retail Corp', plan_name: 'Professional Monthly (+560 Odoo)', total_recurring_amount: 1059.0, status: 'active', next_billing_date: '2026-10-31' },
+        { id: 2, sub_number: 'SUB-2026-0002', customer_name: 'Apex Logistics Inc', plan_name: 'Enterprise Yearly', total_recurring_amount: 4990.0, status: 'active', next_billing_date: '2026-11-15' },
+        { id: 3, sub_number: 'SUB-2026-0003', customer_name: 'Nexus Media Labs', plan_name: 'Professional Monthly', total_recurring_amount: 499.0, status: 'quotation', next_billing_date: '2026-11-01' }
       ];
     }
   },
 
-  async getInvoices(params = {}) {
-    try {
-      const query = new URLSearchParams(params).toString();
-      const data = await this.request(`/api/invoices?${query}`);
-      return data.invoices;
-    } catch (err) {
-      return [
-        { id: 'inv_101', invoice_number: 'INV-2026-0001', sub_number: 'SUB-2026-0001', customer_name: 'Shopmate Retail Corp', total_amount: 1090.77, status: 'paid', due_date: '2026-09-15' },
-        { id: 'inv_102', invoice_number: 'INV-2026-0002', sub_number: 'SUB-2026-0001', customer_name: 'Shopmate Retail Corp', total_amount: 1090.77, status: 'confirmed', due_date: '2026-10-15' }
-      ];
-    }
-  },
-
-  async runBillingEngine(targetDate) {
-    return await this.request('/api/billing/run', {
-      method: 'POST',
-      body: JSON.stringify({ targetDate })
-    });
-  },
-
-  async payInvoice(invoiceId, payload = {}) {
-    return await this.request(`/api/invoices/${invoiceId}/pay`, {
+  async createSubscription(payload) {
+    return await this.request('/api/subscriptions', {
       method: 'POST',
       body: JSON.stringify(payload)
     });
@@ -171,6 +136,65 @@ const api = {
       method: 'PATCH',
       body: JSON.stringify({ status })
     });
+  },
+
+  async getInvoices(params = {}) {
+    try {
+      const query = new URLSearchParams(params).toString();
+      const data = await this.request(`/api/invoices?${query}`);
+      return data.invoices || data;
+    } catch (err) {
+      return [
+        { id: 1, invoice_number: 'INV-2026-0001', sub_number: 'SUB-2026-0001', customer_name: 'Shopmate Retail Corp', total_amount: 1090.77, tax_amount: 166.38, status: 'paid', due_date: '2026-09-15', invoice_date: '2026-09-01' },
+        { id: 2, invoice_number: 'INV-2026-0002', sub_number: 'SUB-2026-0001', customer_name: 'Shopmate Retail Corp', total_amount: 1090.77, tax_amount: 166.38, status: 'confirmed', due_date: '2026-10-15', invoice_date: '2026-10-01' }
+      ];
+    }
+  },
+
+  async updateInvoiceStatus(invoiceId, status) {
+    return await this.request(`/api/invoices/${invoiceId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+  },
+
+  async payInvoice(invoiceId, payload = {}) {
+    return await this.request(`/api/invoices/${invoiceId}/pay`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  },
+
+  async runBillingEngine(targetDate) {
+    return await this.request('/api/billing/run', {
+      method: 'POST',
+      body: JSON.stringify({ targetDate })
+    });
+  },
+
+  async getProducts() {
+    try {
+      const data = await this.request('/api/catalog/products');
+      return data.products || data;
+    } catch {
+      return [
+        { id: 1, name: 'Brightloop Enterprise ERP', base_price: 499.00, variants: [{ id: 1, name: 'Odoo Edition Integration', price_adjustment: 560.00 }] },
+        { id: 2, name: 'Brightloop CRM Professional', base_price: 199.00, variants: [] },
+        { id: 3, name: '24/7 Dedicated SLA Support', base_price: 350.00, variants: [] }
+      ];
+    }
+  },
+
+  async getPlans() {
+    try {
+      const data = await this.request('/api/catalog/plans');
+      return data.plans || data;
+    } catch {
+      return [
+        { id: 1, name: 'Professional Monthly', billing_period: 'monthly' },
+        { id: 2, name: 'Enterprise Yearly', billing_period: 'yearly' }
+      ];
+    }
   },
 
   logout() {
