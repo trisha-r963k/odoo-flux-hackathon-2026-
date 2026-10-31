@@ -1,0 +1,116 @@
+{% extends "subscriptions/base_sub.html" %}
+
+{% block title %}{{ template.name }} - Template Details{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'subscriptions:template_list' %}" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="bi bi-arrow-left me-1"></i>Back to Templates
+    </a>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="h3 fw-bold mb-1">{{ template.name }}</h2>
+            <p class="text-muted mb-0">Plan: {{ template.plan.name|default:"Standard Plan" }} &bull; Validity: {{ template.validity_days }} Days</p>
+        </div>
+        <a href="{% url 'subscriptions:create_from_template' %}?template={{ template.pk }}" class="btn btn-primary">
+            <i class="bi bi-magic me-1"></i>Generate Quote with this Template
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Configured Product Lines -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title fw-bold mb-0">Template Product Lines</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th class="text-center">Quantity</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-end">Line Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in lines %}
+                            <tr>
+                                <td class="fw-semibold">{{ line.product.name|default:"Product" }}</td>
+                                <td class="text-center">{{ line.quantity }}</td>
+                                <td class="text-end">₹{{ line.unit_price }}</td>
+                                <td class="text-end fw-bold">₹{{ line.total_amount }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    No products configured in this template yet.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Add Line Form -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-light py-2">
+                <span class="fw-semibold small"><i class="bi bi-plus-circle me-1"></i>Add Product to Template</span>
+            </div>
+            <div class="card-body">
+                <form method="post" action="{% url 'subscriptions:template_add_line' template.pk %}" class="row g-2 align-items-end">
+                    {% csrf_token %}
+                    <div class="col-md-5">
+                        <label class="form-label small mb-1">Product</label>
+                        {{ line_form.product }}
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small mb-1">Quantity</label>
+                        {{ line_form.quantity }}
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small mb-1">Default Unit Price</label>
+                        {{ line_form.unit_price }}
+                    </div>
+                    <div class="col-12 mt-3 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-plus-lg me-1"></i>Add Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Summary Info -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title fw-bold mb-0">Template Info</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3">
+                        <small class="text-muted d-block">Default Validity</small>
+                        <span class="fw-semibold">{{ template.validity_days }} days from creation</span>
+                    </li>
+                    <li class="mb-3">
+                        <small class="text-muted d-block">Base Plan</small>
+                        <span class="badge bg-light text-dark border">{{ template.plan.name|default:"Standard Plan" }}</span>
+                    </li>
+                    {% if template.description %}
+                        <li>
+                            <small class="text-muted d-block">Notes / Terms</small>
+                            <p class="small text-secondary mb-0">{{ template.description }}</p>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

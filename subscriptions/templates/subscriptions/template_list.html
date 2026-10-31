@@ -1,0 +1,66 @@
+{% extends "subscriptions/base_sub.html" %}
+
+{% block title %}Quotation Templates - Brightloop{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="h3 mb-1 fw-bold">Quotation Templates</h2>
+        <p class="text-muted mb-0">Standardized sales packages with pre-selected plans, items, and validity periods.</p>
+    </div>
+    {% if is_staff_admin %}
+        <a href="{% url 'subscriptions:template_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>New Template
+        </a>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    {% for tmpl in templates %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title fw-bold mb-0">{{ tmpl.name }}</h5>
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                            {{ tmpl.validity_days }} Days
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Plan: <span class="fw-medium text-dark">{{ tmpl.plan.name|default:"Standard" }}</span>
+                    </p>
+                    <p class="small text-secondary mb-3">
+                        {{ tmpl.description|default:"No description provided."|truncatechars:100 }}
+                    </p>
+                    <div class="small text-muted mb-3">
+                        <i class="bi bi-list-check me-1"></i>{{ tmpl.lines.count }} Product Lines configured
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top-0 d-flex justify-content-between pt-0 pb-3">
+                    <a href="{% url 'subscriptions:template_detail' tmpl.pk %}" class="btn btn-sm btn-outline-secondary">
+                        Manage Items
+                    </a>
+                    <a href="{% url 'subscriptions:create_from_template' %}?template={{ tmpl.pk }}" class="btn btn-sm btn-primary">
+                        Use Template <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="card py-5 text-center text-muted">
+                <i class="bi bi-file-earmark-plus fs-2 mb-2"></i>
+                <p class="mb-2">No quotation templates configured yet.</p>
+                {% if is_staff_admin %}
+                    <div>
+                        <a href="{% url 'subscriptions:template_create' %}" class="btn btn-outline-primary btn-sm">
+                            Create First Template
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
