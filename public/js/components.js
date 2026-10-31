@@ -77,6 +77,9 @@ const components = {
             <span>WAL &bull; ${slaMs} ms SLA</span>
           </div>
 
+          <button class="theme-toggle-btn" onclick="app.toggleTheme()" title="Toggle High-Contrast Light / Dark Mode" style="margin-right: 8px;">
+            <span class="theme-icon">${window.app?.currentTheme === 'light' ? icons.moon : icons.sun}</span>
+          </button>
           <div class="user-profile-strip">
             <div class="user-initials-badge">${initials}</div>
             <div class="user-details">

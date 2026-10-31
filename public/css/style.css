@@ -2902,3 +2902,498 @@ body {
     display: none;
   }
 }
+
+
+/* =========================================================
+   THEME TOGGLE BUTTON & SIMULATION DOCK STYLES
+   ========================================================= */
+
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* One-Click Automated Billing Day Simulation Dock */
+.simulation-dock {
+  margin-top: 24px;
+  padding: 18px 22px;
+  background: rgba(113, 75, 103, 0.1);
+  border: 1px solid rgba(113, 75, 103, 0.3);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.simulation-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sim-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #c084fc;
+  letter-spacing: 0.5px;
+}
+
+.sim-heading {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sim-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+.btn-simulation {
+  background: #714b67;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(113, 75, 103, 0.35);
+}
+
+.btn-simulation:hover {
+  background: #8b557d;
+  transform: translateY(-1px);
+}
+
+.btn-simulation:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Simulation Result Card */
+.sim-result-card {
+  margin-top: 16px;
+  background: #090c12;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 10px;
+  padding: 18px 22px;
+}
+
+.sim-result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sim-result-title-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sim-time-tag {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.sim-target-tag {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: #64748b;
+}
+
+.sim-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sim-stat-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 14px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sim-proof-banner {
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   HIGH-CONTRAST LIGHT MODE (PRINT & INVOICE INSPECTION)
+   ========================================================= */
+
+[data-theme="light"] .site-wrapper {
+  background-color: #f8fafc !important;
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(113, 75, 103, 0.08) 0%, transparent 60%),
+    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px) !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .site-header {
+  background: rgba(255, 255, 255, 0.94) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .brand-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .nav-link {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .nav-link:hover {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .btn-text {
+  color: #334155 !important;
+}
+
+[data-theme="light"] .btn-text:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .theme-toggle-btn {
+  background: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+[data-theme="light"] .theme-toggle-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .hero-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .hero-copy {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .btn-outline-lg {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .btn-outline-lg:hover {
+  background: #f8fafc !important;
+  border-color: #94a3b8 !important;
+}
+
+[data-theme="light"] .eval-strip-label {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .eval-pill {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+[data-theme="light"] .eval-pill:hover {
+  background: #faf5f9 !important;
+  border-color: #714b67 !important;
+  color: #714b67 !important;
+}
+
+/* Window Frame Showcase (Light) */
+[data-theme="light"] .window-frame {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 20px 48px -12px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(15, 23, 42, 0.04) !important;
+}
+
+[data-theme="light"] .window-titlebar {
+  background: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .win-tab {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .win-tab:hover {
+  color: #0f172a !important;
+  background: #f1f5f9 !important;
+}
+
+[data-theme="light"] .win-tab.active {
+  color: #0f172a !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="light"] .window-meta {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .window-content {
+  background: #ffffff !important;
+}
+
+[data-theme="light"] .invoice-summary-bar {
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .inv-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .inv-sub {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .clean-table thead th {
+  background: #f8fafc !important;
+  color: #475569 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .clean-table tbody td {
+  border-bottom: 1px solid #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+[data-theme="light"] .clean-table tfoot td {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .clean-table tfoot tr.total-row td {
+  border-top: 2px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .clean-table .text-bold {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .panel-footer-meta {
+  border-top: 1px solid #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+[data-theme="light"] .contract-card-header {
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .contract-number {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .contract-customer {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .contract-data-cell {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .cell-val {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .contract-status-bar {
+  border-top: 1px solid #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+[data-theme="light"] .benchmark-stat-card {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .benchmark-val {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .benchmark-sub {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .benchmark-sparkline-shell {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Capabilities (Light) */
+[data-theme="light"] .features-section {
+  background: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .features-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .feature-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .feature-card:hover {
+  border-color: #714b67 !important;
+  box-shadow: 0 8px 24px rgba(113, 75, 103, 0.08) !important;
+}
+
+[data-theme="light"] .feature-heading {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .feature-text {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .feature-meta-tag {
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+/* Simulation Dock (Light) */
+[data-theme="light"] .simulation-dock {
+  background: #faf5f9 !important;
+  border-color: #eedbe8 !important;
+}
+
+[data-theme="light"] .sim-badge {
+  color: #714b67 !important;
+}
+
+[data-theme="light"] .sim-heading {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .sim-sub {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .sim-result-card {
+  background: #ffffff !important;
+  border: 1px solid #10b981 !important;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08) !important;
+}
+
+[data-theme="light"] .sim-result-header {
+  border-bottom-color: #f1f5f9 !important;
+}
+
+[data-theme="light"] .sim-time-tag {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .sim-stat-box {
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .stat-value {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .sim-proof-banner {
+  border-top-color: #f1f5f9 !important;
+  color: #475569 !important;
+}
+
+/* Footer (Light) */
+[data-theme="light"] .site-footer {
+  background: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .footer-tagline {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .footer-col-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .footer-links li a,
+[data-theme="light"] .footer-links li span {
+  color: #64748b !important;
+}
+
+[data-theme="light"] .footer-links li a:hover {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .engine-status-box {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .engine-meta-row strong {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .footer-bottom-bar {
+  border-top: 1px solid #e2e8f0 !important;
+  color: #64748b !important;
+}
