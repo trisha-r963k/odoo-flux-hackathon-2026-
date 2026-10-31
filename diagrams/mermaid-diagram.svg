@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1541.0962499999998 600.8" width="1541.0962499999998" height="600.8" style="--bg:#18181B;--fg:#F4F4F5;--line:#71717A;--muted:#A1A1AA;--surface:#27272A;--border:#3F3F46;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<g class="subgraph" data-id="Client" data-label="Frontend Layer (SPA / SSR)">
+  <rect x="777.30125" y="46" width="365.459" height="113.80000000000001" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="777.30125" y="46" width="365.459" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="789.30125" y="60" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Frontend Layer (SPA / SSR)</text>
+</g>
+<g class="subgraph" data-id="API" data-label="Backend API Gateway &amp; Services">
+  <rect x="40" y="282.1" width="1242.2089999999998" height="113.80000000000001" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="40" y="282.1" width="1242.2089999999998" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="52" y="296.1" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Backend API Gateway &amp; Services</text>
+</g>
+<g class="subgraph" data-id="Workers" data-label="Background Billing Scheduler">
+  <rect x="1170.7602499999998" y="40" width="330.33599999999996" height="113.80000000000001" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="1170.7602499999998" y="40" width="330.33599999999996" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="1182.7602499999998" y="54" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Background Billing Scheduler</text>
+</g>
+<g class="subgraph" data-id="Data" data-label="Data &amp; Storage Layer">
+  <rect x="468.7765" y="449.90000000000003" width="780.7149999999998" height="110.9" rx="0" ry="0" fill="var(--_group-fill)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <rect x="468.7765" y="449.90000000000003" width="780.7149999999998" height="28" rx="0" ry="0" fill="var(--_group-hdr)" stroke="var(--_node-stroke)" stroke-width="1" />
+  <text x="480.7765" y="463.90000000000003" font-size="12" font-weight="600" fill="var(--_text-sec)" dy="4.199999999999999">Data &amp; Storage Layer</text>
+</g>
+<polyline class="edge" data-from="Client" data-to="API" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="HTTPS / REST or GraphQL" points="960.03075,159.8 960.0307499999999,264.1 1142.9795,264.1 1142.9795,282.1" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Cron" data-to="BillingEngine" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Triggers billing runs" points="1335.9282499999997,140.8 1335.92825,264.1 1152.9795,264.1 1152.9795,330.32500000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="API" data-to="DB" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1019.7499999999999,395.90000000000003 1019.7499999999999,419.90000000000003 609.4914999999999,419.90000000000003 609.4915,493.90000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="API" data-to="Redis" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1029.75,395.90000000000003 1029.75,431.90000000000003 858.7634999999998,431.90000000000003 858.7634999999998,493.90000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="API" data-to="Storage" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="1039.75,395.90000000000003 1039.75,431.90000000000003 1108.406,431.90000000000003 1108.406,493.90000000000003" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="Client" data-to="API" data-label="HTTPS / REST or GraphQL">
+  <rect x="886.5307499999999" y="202.8" width="146.548" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="959.8047499999999" y="217.95000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">HTTPS / REST or GraphQL</text>
+</g>
+<g class="edge-label" data-from="Cron" data-to="BillingEngine" data-label="Triggers billing runs">
+  <rect x="1278.92825" y="202.8" width="113.87800000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="1335.86725" y="217.95000000000002" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Triggers billing runs</text>
+</g>
+<g class="node" data-id="CP" data-label="Customer Portal
+(Self-Service)" data-shape="rectangle">
+  <rect x="793.30125" y="87" width="136.05700000000002" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="861.32975" y="113.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="861.32975" dy="-3.9000000000000012">Customer Portal</tspan><tspan x="861.32975" dy="16.900000000000002">(Self-Service)</tspan></text>
+</g>
+<g class="node" data-id="AP" data-label="Admin &amp; Staff Portal
+(Management System)" data-shape="rectangle">
+  <rect x="957.35825" y="87" width="169.402" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1042.05925" y="113.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1042.05925" dy="-3.9000000000000012">Admin &amp; Staff Portal</tspan><tspan x="1042.05925" dy="16.900000000000002">(Management System)</tspan></text>
+</g>
+<g class="node" data-id="Auth" data-label="Auth &amp; RBAC Service
+(JWT, Session, Password Policy)" data-shape="rectangle">
+  <rect x="774.1759999999999" y="330.32500000000005" width="237.57399999999996" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="892.963" y="357.225" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="892.963" dy="-3.9000000000000012">Auth &amp; RBAC Service</tspan><tspan x="892.963" dy="16.900000000000002">(JWT, Session, Password Policy)</tspan></text>
+</g>
+<g class="node" data-id="SubEngine" data-label="Subscription &amp; Quotes Engine
+(State Machine)" data-shape="rectangle">
+  <rect x="531.573" y="330.32500000000005" width="214.60299999999998" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="638.8745" y="357.225" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="638.8745" dy="-3.9000000000000012">Subscription &amp; Quotes Engine</tspan><tspan x="638.8745" dy="16.900000000000002">(State Machine)</tspan></text>
+</g>
+<g class="node" data-id="BillingEngine" data-label="Billing &amp; Invoicing Engine
+(Taxes, Discounts, Invoice Gen)" data-shape="rectangle">
+  <rect x="1039.75" y="330.32500000000005" width="226.45899999999997" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1152.9795" y="357.225" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1152.9795" dy="-3.9000000000000012">Billing &amp; Invoicing Engine</tspan><tspan x="1152.9795" dy="16.900000000000002">(Taxes, Discounts, Invoice Gen)</tspan></text>
+</g>
+<g class="node" data-id="PaymentService" data-label="Payment Tracking Service" data-shape="rectangle">
+  <rect x="304.53099999999995" y="330.32500000000005" width="199.042" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="404.05199999999996" y="348.77500000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Payment Tracking Service</text>
+</g>
+<g class="node" data-id="ReportService" data-label="Reporting &amp; Analytics Service
+(MRR, Overdue, Aggregations)" data-shape="rectangle">
+  <rect x="56" y="330.32500000000005" width="220.53099999999995" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="166.26549999999997" y="357.225" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="166.26549999999997" dy="-3.9000000000000012">Reporting &amp; Analytics Service</tspan><tspan x="166.26549999999997" dy="16.900000000000002">(MRR, Overdue, Aggregations)</tspan></text>
+</g>
+<g class="node" data-id="Cron" data-label="Billing Day Cron Job / Worker
+(Runs recurring invoices without duplicates)" data-shape="rectangle">
+  <rect x="1186.7602499999998" y="87" width="298.33599999999996" height="53.800000000000004" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1335.9282499999997" y="113.9" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="1335.9282499999997" dy="-3.9000000000000012">Billing Day Cron Job / Worker</tspan><tspan x="1335.9282499999997" dy="16.900000000000002">(Runs recurring invoices without duplicates)</tspan></text>
+</g>
+<g class="node" data-id="DB" data-label="PostgreSQL / MySQL Relational DB" data-shape="cylinder">
+  <rect x="484.7765" y="500.90000000000003" width="249.4299999999999" height="36.900000000000006" fill="var(--_node-fill)" stroke="none" />
+  <line x1="484.7765" y1="500.90000000000003" x2="484.7765" y2="537.8000000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="734.2064999999999" y1="500.90000000000003" x2="734.2064999999999" y2="537.8000000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="609.4915" cy="537.8000000000001" rx="124.71499999999995" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="609.4915" cy="500.90000000000003" rx="124.71499999999995" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="609.4915" y="519.35" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">PostgreSQL / MySQL Relational DB</text>
+</g>
+<g class="node" data-id="Redis" data-label="Redis Cache &amp; Job Queue" data-shape="cylinder">
+  <rect x="762.2064999999998" y="500.90000000000003" width="193.114" height="36.900000000000006" fill="var(--_node-fill)" stroke="none" />
+  <line x1="762.2064999999998" y1="500.90000000000003" x2="762.2064999999998" y2="537.8000000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="955.3204999999998" y1="500.90000000000003" x2="955.3204999999998" y2="537.8000000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="858.7634999999998" cy="537.8000000000001" rx="96.557" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="858.7634999999998" cy="500.90000000000003" rx="96.557" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="858.7634999999998" y="519.35" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Redis Cache &amp; Job Queue</text>
+</g>
+<g class="node" data-id="Storage" data-label="S3 / Local Storage for Invoice PDFs" data-shape="cylinder">
+  <rect x="983.3204999999998" y="500.90000000000003" width="250.17099999999996" height="36.900000000000006" fill="var(--_node-fill)" stroke="none" />
+  <line x1="983.3204999999998" y1="500.90000000000003" x2="983.3204999999998" y2="537.8000000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <line x1="1233.4914999999999" y1="500.90000000000003" x2="1233.4914999999999" y2="537.8000000000001" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="1108.4059999999997" cy="537.8000000000001" rx="125.08549999999998" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <ellipse cx="1108.4059999999997" cy="500.90000000000003" rx="125.08549999999998" ry="7" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="1108.4059999999997" y="519.35" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">S3 / Local Storage for Invoice PDFs</text>
+</g>
+</svg>

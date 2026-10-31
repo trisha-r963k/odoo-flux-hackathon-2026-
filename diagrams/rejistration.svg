@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 695.1579166666667 1285.31" width="695.1579166666667" height="1285.31" style="--bg:#18181B;--fg:#F4F4F5;--line:#71717A;--muted:#A1A1AA;--surface:#27272A;--border:#3F3F46;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="Start" data-to="RoleCheck" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="363.85625000000005,76.9 363.85625000000005,124.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="RoleCheck" data-to="CustForm" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Customer" points="331.37558333333334,287.3033333333333 331.37558333333334,331.784 219.21325000000002,331.784 219.21325000000002,412.084" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CustForm" data-to="ValPass" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="219.21325000000002,448.984 219.21325000000002,496.984" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ValPass" data-to="ErrMsg" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="No" points="174.25908333333336,721.7548333333332 174.25908333333336,890.01 125.44200000000001,890.01 125.44200000000001,970.31" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="ValPass" data-to="CheckEmail" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Yes" points="264.16741666666667,721.7548333333332 264.16741666666667,802.7089999999998 312.9845,802.7089999999998 312.9845,883.0089999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CheckEmail" data-to="ErrEmail" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="No" points="288.28433333333334,1006.5098333333331 288.28433333333334,1043.2099999999998 195.38800000000003,1043.2099999999998 195.38800000000003,1123.5099999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CheckEmail" data-to="CreateCust" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Yes" points="337.6846666666667,1006.5098333333331 337.6846666666667,1043.2099999999998 430.581,1043.2099999999998 430.581,1123.5099999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CreateCust" data-to="CustPortal" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="430.581,1160.4099999999999 430.581,1208.4099999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="RoleCheck" data-to="AdminAction" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Staff Member" points="396.3369166666667,287.30333333333334 396.3369166666667,548.009 517.1049166666667,548.009 517.1049166666667,628.309" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="AdminAction" data-to="CreateStaff" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="517.1049166666667,665.2089999999998 517.1049166666667,713.2089999999998" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="CreateStaff" data-to="SendInvite" data-style="solid" data-arrow-start="false" data-arrow-end="true" points="517.1049166666667,750.1089999999999 517.1049166666667,798.1089999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="RoleCheck" data-to="CustForm" data-label="Customer">
+  <rect x="187.71325000000002" y="338.784" width="62.794" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="219.11025" y="353.93399999999997" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Customer</text>
+</g>
+<g class="edge-label" data-from="ValPass" data-to="ErrMsg" data-label="No">
+  <rect x="109.94200000000001" y="897.01" width="30.718000000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="125.30100000000002" y="912.16" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">No</text>
+</g>
+<g class="edge-label" data-from="ValPass" data-to="CheckEmail" data-label="Yes">
+  <rect x="294.4845" y="809.7089999999998" width="36.658" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="312.81350000000003" y="824.8589999999998" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Yes</text>
+</g>
+<g class="edge-label" data-from="CheckEmail" data-to="ErrEmail" data-label="No">
+  <rect x="179.888" y="1050.2099999999998" width="30.718000000000004" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="195.247" y="1065.36" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">No</text>
+</g>
+<g class="edge-label" data-from="CheckEmail" data-to="CreateCust" data-label="Yes">
+  <rect x="412.081" y="1050.2099999999998" width="36.658" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="430.41" y="1065.36" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Yes</text>
+</g>
+<g class="edge-label" data-from="RoleCheck" data-to="AdminAction" data-label="Staff Member">
+  <rect x="477.60491666666667" y="555.009" width="78.238" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="516.7239166666667" y="570.159" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Staff Member</text>
+</g>
+<g class="node" data-id="Start" data-label="User Registration / Staff Creation" data-shape="stadium">
+  <rect x="248.40375000000006" y="40" width="230.90499999999994" height="36.900000000000006" rx="18.450000000000003" ry="18.450000000000003" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="363.85625000000005" y="58.45" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">User Registration / Staff Creation</text>
+</g>
+<g class="node" data-id="RoleCheck" data-label="Who is being created?" data-shape="diamond">
+  <polygon points="363.85625000000005,124.89999999999999 461.29825000000005,222.34199999999998 363.85625000000005,319.784 266.41425000000004,222.34199999999998" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="363.85625000000005" y="222.34199999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Who is being created?</text>
+</g>
+<g class="node" data-id="CustForm" data-label="Customer Enters Email &amp; Password" data-shape="rectangle">
+  <rect x="95.98025000000004" y="412.084" width="246.46599999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="219.21325000000002" y="430.534" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Customer Enters Email &amp; Password</text>
+</g>
+<g class="node" data-id="ValPass" data-label="Password Valid?
+8+ chars, 1 Upper, 1 Lower, 1 Special" data-shape="diamond">
+  <polygon points="219.21325000000002,496.9839999999999 354.07574999999997,631.8464999999999 219.21325000000002,766.7089999999998 84.35075000000006,631.8464999999999" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="219.21325000000002" y="631.8464999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)"><tspan x="219.21325000000002" dy="-3.9000000000000012">Password Valid?</tspan><tspan x="219.21325000000002" dy="16.900000000000002">8+ chars, 1 Upper, 1 Lower, 1 Special</tspan></text>
+</g>
+<g class="node" data-id="ErrMsg" data-label="Show Validation Error" data-shape="rectangle">
+  <rect x="40" y="970.31" width="170.884" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="125.442" y="988.76" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Show Validation Error</text>
+</g>
+<g class="node" data-id="CheckEmail" data-label="Email Unique?" data-shape="diamond">
+  <polygon points="312.9845,883.0089999999998 387.08500000000004,957.1094999999998 312.9845,1031.2099999999998 238.88400000000001,957.1094999999998" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="312.9845" y="957.1094999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Email Unique?</text>
+</g>
+<g class="node" data-id="ErrEmail" data-label="Email Already Exists" data-shape="rectangle">
+  <rect x="114.39200000000002" y="1123.5099999999998" width="161.99200000000002" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="195.38800000000003" y="1141.9599999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Email Already Exists</text>
+</g>
+<g class="node" data-id="CreateCust" data-label="Create User with Role = CUSTOMER" data-shape="rectangle">
+  <rect x="304.384" y="1123.5099999999998" width="252.39399999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="430.581" y="1141.9599999999998" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Create User with Role = CUSTOMER</text>
+</g>
+<g class="node" data-id="CustPortal" data-label="Redirect to Customer Portal" data-shape="rectangle">
+  <rect x="329.9485000000001" y="1208.4099999999999" width="201.26499999999993" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="430.581" y="1226.86" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Redirect to Customer Portal</text>
+</g>
+<g class="node" data-id="AdminAction" data-label="Admin Enters Staff Details in Admin Panel" data-shape="rectangle">
+  <rect x="379.0519166666667" y="628.309" width="276.10599999999994" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="517.1049166666667" y="646.759" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Admin Enters Staff Details in Admin Panel</text>
+</g>
+<g class="node" data-id="CreateStaff" data-label="Create User with Role = STAFF" data-shape="rectangle">
+  <rect x="405.3574166666667" y="713.2089999999998" width="223.49499999999998" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="517.1049166666667" y="731.6589999999999" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Create User with Role = STAFF</text>
+</g>
+<g class="node" data-id="SendInvite" data-label="Send Invite / Temp Password Email" data-shape="rectangle">
+  <rect x="395.3539166666667" y="798.1089999999999" width="243.50199999999995" height="36.900000000000006" rx="0" ry="0" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="517.1049166666667" y="816.559" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Send Invite / Temp Password Email</text>
+</g>
+</svg>
