@@ -1,0 +1,21 @@
+{
+  "name": "brightloop-subscription-management",
+  "version": "1.0.0",
+  "description": "Unified Subscription & Recurring Billing Engine for Brightloop Software (Odoo x FLUX Hackathon 2026)",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "seed": "node -e \"require('./server/db/database').seedDatabase(true); console.log('Database re-seeded!');\"",
+    "test": "node --test"
+  },
+  "keywords": [
+    "odoo",
+    "subscription-management",
+    "recurring-billing",
+    "mrr",
+    "hackathon-2026"
+  ],
+  "author": "Brightloop Hackathon Team",
+  "license": "MIT"
+}
