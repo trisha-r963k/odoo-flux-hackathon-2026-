@@ -1,0 +1,188 @@
+{% extends "billing/base_billing.html" %}
+
+{% block title %}{{ invoice.invoice_number }} - Brightloop Billing{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'billing:invoice_list' %}" class="btn btn-outline-secondary btn-sm mb-3">
+        <i class="bi bi-arrow-left me-1"></i>Back to Invoices
+    </a>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="badge badge-{{ invoice.status }} text-uppercase px-3 py-2 fs-6">
+                    {{ invoice.get_status_display }}
+                </span>
+                {% if invoice.is_overdue %}
+                    <span class="badge bg-danger text-uppercase px-3 py-2 fs-6">Overdue</span>
+                {% endif %}
+                {% if invoice.sent_at %}
+                    <span class="badge bg-light text-secondary border">Sent on {{ invoice.sent_at|date:"d M H:i" }}</span>
+                {% endif %}
+            </div>
+            <h2 class="h3 fw-bold mb-0">{{ invoice.invoice_number }}</h2>
+        </div>
+
+        <!-- Action Controls -->
+        <div class="d-flex flex-wrap gap-2">
+            {% if is_staff_admin %}
+                {% if invoice.status == 'draft' %}
+                    <form method="post" action="{% url 'billing:invoice_confirm' invoice.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-info text-white">
+                            <i class="bi bi-check2-circle me-1"></i>Confirm Invoice
+                        </button>
+                    </form>
+                {% endif %}
+
+                {% if invoice.status != 'paid' and invoice.status != 'cancelled' %}
+                    <form method="post" action="{% url 'billing:invoice_send' invoice.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="bi bi-send me-1"></i>Send Invoice
+                        </button>
+                    </form>
+
+                    <form method="post" action="{% url 'billing:invoice_mark_paid' invoice.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-cash-coin me-1"></i>Mark as Paid
+                        </button>
+                    </form>
+
+                    <form method="post" action="{% url 'billing:invoice_cancel' invoice.pk %}" onsubmit="return confirm('Cancel this invoice?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-x-circle me-1"></i>Cancel
+                        </button>
+                    </form>
+                {% endif %}
+            {% endif %}
+
+            <a href="{% url 'billing:invoice_print' invoice.pk %}" target="_blank" class="btn btn-outline-dark">
+                <i class="bi bi-printer me-1"></i>Print / PDF
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Invoice Overview -->
+    <div class="col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">Invoice Details</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-3">
+                        <small class="text-muted d-block">Billed To (Customer)</small>
+                        <span class="fw-semibold">{{ invoice.customer.username }}</span>
+                        {% if invoice.customer.email %}
+                            <small class="text-muted d-block">{{ invoice.customer.email }}</small>
+                        {% endif %}
+                    </li>
+                    <li class="mb-3">
+                        <small class="text-muted d-block">Originating Subscription</small>
+                        {% if invoice.subscription %}
+                            <a href="{% url 'subscriptions:subscription_detail' invoice.subscription.pk %}" class="fw-medium text-decoration-none">
+                                {{ invoice.subscription.subscription_number }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted">Direct Invoice</span>
+                        {% endif %}
+                    </li>
+                    <li class="mb-3">
+                        <small class="text-muted d-block">Billing Period</small>
+                        <span>{{ invoice.period_start_date|date:"F d, Y" }} &rarr; {{ invoice.period_end_date|date:"F d, Y" }}</span>
+                    </li>
+                    <li class="mb-3">
+                        <small class="text-muted d-block">Invoice Date</small>
+                        <span>{{ invoice.invoice_date|date:"F d, Y" }}</span>
+                    </li>
+                    <li class="mb-3">
+                        <small class="text-muted d-block">Payment Due Date</small>
+                        <span class="{% if invoice.is_overdue %}text-danger fw-bold{% else %}fw-medium{% endif %}">
+                            {{ invoice.due_date|date:"F d, Y" }}
+                        </span>
+                    </li>
+                    {% if invoice.notes %}
+                        <li>
+                            <small class="text-muted d-block">Remarks</small>
+                            <p class="small text-secondary mb-0">{{ invoice.notes }}</p>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Line Items and Totals -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title mb-0 fw-bold">Line Items</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item Description</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-end">Unit Price</th>
+                            <th class="text-center">Tax Rate</th>
+                            <th class="text-end">Tax Amt</th>
+                            <th class="text-end">Line Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in lines %}
+                            <tr>
+                                <td class="fw-semibold">{{ line.description }}</td>
+                                <td class="text-center">{{ line.quantity }}</td>
+                                <td class="text-end">₹{{ line.unit_price }}</td>
+                                <td class="text-center">
+                                    {% if line.tax_rate > 0 %}
+                                        <span class="badge bg-light text-secondary border">{{ line.tax_rate }}%</span>
+                                    {% else %}
+                                        <span class="text-muted">0%</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end text-muted">₹{{ line.tax_amount }}</td>
+                                <td class="text-end fw-bold">₹{{ line.total_amount }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    No line items attached to this invoice.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-group-divider">
+                        <tr>
+                            <td colspan="5" class="text-end fw-semibold">Subtotal:</td>
+                            <td class="text-end fw-semibold">₹{{ invoice.subtotal }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" class="text-end text-muted">Total Tax:</td>
+                            <td class="text-end text-muted">₹{{ invoice.tax_amount }}</td>
+                        </tr>
+                        {% if invoice.discount_amount > 0 %}
+                            <tr>
+                                <td colspan="5" class="text-end text-success">Discount:</td>
+                                <td class="text-end text-success">-₹{{ invoice.discount_amount }}</td>
+                            </tr>
+                        {% endif %}
+                        <tr class="table-active">
+                            <td colspan="5" class="text-end fw-bold fs-5">Total Due:</td>
+                            <td class="text-end fw-bold fs-5 text-primary">₹{{ invoice.total_amount }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

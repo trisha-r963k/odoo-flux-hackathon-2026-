@@ -1,0 +1,71 @@
+{% extends "billing/base_billing.html" %}
+
+{% block title %}Automatic Billing Run - Brightloop Billing{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="d-flex align-items-center mb-3">
+            <a href="{% url 'billing:invoice_list' %}" class="btn btn-outline-secondary btn-sm me-3">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <div>
+                <h2 class="h3 fw-bold mb-0">Automatic Recurring Billing Run</h2>
+                <p class="text-muted small mb-0">Evaluate all active subscriptions and generate due invoices in one click.</p>
+            </div>
+        </div>
+
+        <!-- Billing Overview Card -->
+        <div class="card shadow-sm mb-4 border-primary">
+            <div class="card-body p-4 text-center">
+                <div class="mb-3">
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-6">
+                        Today: {{ today|date:"F d, Y" }}
+                    </span>
+                </div>
+                <h3 class="display-6 fw-bold text-dark mb-2">{{ due_count }} Subscriptions</h3>
+                <p class="text-muted mb-4">
+                    {% if due_count > 0 %}
+                        There are currently {{ due_count }} active subscriptions due for billing on or before today.
+                    {% else %}
+                        All subscriptions are currently up to date! No pending cycles found.
+                    {% endif %}
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-warning btn-lg px-5 fw-bold shadow-sm" {% if due_count == 0 %}disabled{% endif %}>
+                        <i class="bi bi-play-circle-fill me-2"></i>Generate Invoices Due Today
+                    </button>
+                </form>
+                <div class="form-text mt-3">
+                    <i class="bi bi-shield-check text-success me-1"></i>
+                    <strong>Anti-Duplicate Guarantee:</strong> The billing engine strictly checks the subscription and period start date. No customer cycle will ever be billed twice.
+                </div>
+            </div>
+        </div>
+
+        {% if due_subs %}
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h6 class="card-title mb-0 fw-bold">Subscriptions Due in this Batch</h6>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for sub in due_subs %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                            <div>
+                                <span class="fw-bold">{{ sub.subscription_number }}</span>
+                                <small class="text-muted d-block">{{ sub.customer.username }} &bull; Plan: {{ sub.plan.name|default:"Standard" }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-light text-primary border">Next Billing: {{ sub.next_billing_date|date:"d M Y" }}</span>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
