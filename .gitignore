@@ -1,7 +1,13 @@
 # Dependencies
+node_modules/
 /node_modules
 /.pnp
 .pnp.js
+
+# SQLite Databases
+brightloop.db
+brightloop.db-wal
+brightloop.db-shm
 
 # Next.js build output
 /.next/
@@ -27,6 +33,7 @@ yarn-error.log*
 
 # OS / Editor files
 .DS_Store
+Thumbs.db
 *.pem
 .idea/
 .vscode/

@@ -26,3 +26,4 @@ const components = {
 };
 
 window.components = components;
+
