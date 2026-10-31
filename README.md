@@ -110,6 +110,6 @@ Detailed SVG diagrams are available in the [`diagrams/`](./diagrams/) directory:
 
 - **Live Site:** [https://odoo-flux-hackathon-2026-public.vercel.app](https://odoo-flux-hackathon-2026-public.vercel.app)
 - **GitHub Repository:** [https://github.com/trisha-r963k/odoo-flux-hackathon-2026-](https://github.com/trisha-r963k/odoo-flux-hackathon-2026-)
-- **Demo Video:** _add your video link here_
+- **Demo Video:** [https://www.loom.com/embed/7d01d72d19f04cee8a6889a2b690c886]
 
 > **Quick test:** Open the live site and use the 1-click preset buttons on the login screen to try the Admin, Staff and Customer roles instantly. Test accounts are listed below.
