@@ -100,7 +100,16 @@ Detailed SVG diagrams are available in the [`diagrams/`](./diagrams/) directory:
 
 ## 👥 Hackathon Team (Odoo x FLUX Hackathon 2026)
 
-- **Trisha** — Team Lead
+- **Sanchita** — Team Leader
 - **Harsh** — Full Stack & Systems Architecture
 - **Prangshu** — Backend & Database Engineering
 - **Rupaq** — Frontend & UI/UX Design
+
+
+## 🌐 Live Demo
+
+- **Live Site:** [https://odoo-flux-hackathon-2026-public.vercel.app](https://odoo-flux-hackathon-2026-public.vercel.app)
+- **GitHub Repository:** [https://github.com/trisha-r963k/odoo-flux-hackathon-2026-](https://github.com/trisha-r963k/odoo-flux-hackathon-2026-)
+- **Demo Video:** _add your video link here_
+
+> **Quick test:** Open the live site and use the 1-click preset buttons on the login screen to try the Admin, Staff and Customer roles instantly. Test accounts are listed below.
