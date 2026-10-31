@@ -1904,25 +1904,25 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Sticky Top Navigation Bar */
+/* Sticky Top Navigation Bar (Decluttered & Executive Spacing) */
 .landing-navbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  background: rgba(13, 12, 19, 0.88);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(13, 12, 19, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .landing-nav-container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  height: 68px;
+  height: 72px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 24px;
+  padding: 0 32px;
 }
 
 .landing-brand-lockup {
@@ -1931,11 +1931,12 @@ body {
   gap: 12px;
   cursor: pointer;
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .landing-brand-mark {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   background: #ffffff;
   color: var(--primary);
   border-radius: var(--radius-md);
@@ -1943,33 +1944,26 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  font-size: 19px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .landing-brand-name {
-  display: block;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: #ffffff;
-  letter-spacing: -0.2px;
-}
-
-.landing-brand-sub {
-  display: block;
-  font-size: 10px;
-  color: #94a3b8;
-  font-family: var(--font-mono);
-  letter-spacing: 0.5px;
+  letter-spacing: -0.3px;
 }
 
 .landing-nav-links {
   display: flex;
-  gap: 24px;
+  align-items: center;
+  gap: 36px;
+  margin: 0 48px;
 }
 
 .landing-nav-link {
-  color: #cbd5e1;
+  color: #94a3b8;
   font-size: 13.5px;
   font-weight: 500;
   text-decoration: none;
@@ -1983,7 +1977,8 @@ body {
 .landing-nav-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  flex-shrink: 0;
 }
 
 .landing-sla-pill {

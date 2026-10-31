@@ -32,29 +32,25 @@ const app = {
           <div class="landing-nav-container">
             <div class="landing-brand-lockup" onclick="app.showLanding()">
               <div class="landing-brand-mark">B</div>
-              <div class="landing-brand-text">
-                <span class="landing-brand-name">Brightloop Software</span>
-                <span class="landing-brand-sub">RECURRING REVENUE ENGINE</span>
-              </div>
+              <span class="landing-brand-name">Brightloop Software</span>
             </div>
 
             <nav class="landing-nav-links">
-              <a href="#benchmarks" class="landing-nav-link">Live Benchmarks</a>
-              <a href="#invoice-engine" class="landing-nav-link">Tax Invoice Engine</a>
-              <a href="#architecture" class="landing-nav-link">SLA &amp; Architecture</a>
-              <a href="#compliance" class="landing-nav-link">18% GST Compliance</a>
+              <a href="#benchmarks" class="landing-nav-link">Benchmarks</a>
+              <a href="#invoice-engine" class="landing-nav-link">Invoice Engine</a>
+              <a href="#architecture" class="landing-nav-link">Architecture &amp; SLA</a>
             </nav>
 
             <div class="landing-nav-actions">
               <div class="landing-sla-pill">
                 <span class="pulse-dot"></span>
-                <span>SQLite WAL &bull; 0.24ms SLA</span>
+                <span>0.24ms SLA</span>
               </div>
               <button class="btn-ghost-landing" onclick="app.showLoginModal('admin')">
                 Sign In
               </button>
               <button class="btn-primary-landing" onclick="app.showLoginModal('admin')">
-                <span>Launch Platform</span>
+                <span>Launch Console</span>
                 <span>${icons.arrowRight}</span>
               </button>
             </div>
@@ -296,8 +292,8 @@ const app = {
         <div class="auth-box-modal">
           <!-- Segmented Tab -->
           <div class="auth-segmented-nav">
-            <button class="auth-seg-btn active" id="modal-tab-signin" onclick="app.switchAuthModalTab('signin')">Sign In</button>
-            <button class="auth-seg-btn" id="modal-tab-signup" onclick="app.switchAuthModalTab('signup')">Customer Sign Up</button>
+            <button class="auth-seg-btn active" id="modal-tab-signin" type="button" onclick="app.switchAuthModalTab('signin')">Sign In</button>
+            <button class="auth-seg-btn" id="modal-tab-signup" type="button" onclick="app.switchAuthModalTab('signup')">Customer Sign Up</button>
           </div>
 
           <!-- SIGN IN FORM VIEW -->
@@ -338,7 +334,7 @@ const app = {
               </div>
             </div>
 
-            <form id="modal-login-form">
+            <form id="modal-login-form" onsubmit="app.handleLoginSubmit(event)">
               <div class="form-field">
                 <label class="form-label" for="login-email">Email Address</label>
                 <div class="form-input-shell">
@@ -372,7 +368,7 @@ const app = {
 
           <!-- SIGN UP FORM VIEW -->
           <div id="auth-modal-signup-pane" style="display: none;">
-            <form id="modal-register-form">
+            <form id="modal-register-form" onsubmit="app.handleRegisterSubmit(event)">
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <div class="form-field">
                   <label class="form-label" for="reg-contact-name">Full Name</label>
@@ -431,75 +427,122 @@ const app = {
     });
 
     this.selectRolePreset(defaultRole);
+  },
 
-    // Bind login form
-    const loginForm = document.getElementById('modal-login-form');
-    if (loginForm) {
-      loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value.trim();
-        const password = document.getElementById('login-password').value;
-        const btn = document.getElementById('modal-login-btn');
-        const errBox = document.getElementById('modal-login-error');
-        errBox.innerHTML = '';
+  selectRolePreset(role) {
+    this.currentSelectedRole = role;
+    document.querySelectorAll('.persona-tile').forEach(t => t.classList.remove('active'));
+    const targetTile = document.getElementById(`tile-${role}`);
+    if (targetTile) targetTile.classList.add('active');
 
-        btn.disabled = true;
-        btn.innerHTML = `<span class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px;"></span><span>Verifying credentials...</span>`;
+    const emailInput = document.getElementById('login-email');
+    const passInput = document.getElementById('login-password');
 
-        try {
-          const res = await window.api.login(email, password);
-          window.api.setToken(res.token);
-          window.api.setUser(res.user);
-          window.components?.modal.close();
-          window.components?.toast.show(`Signed in as ${res.user.name}`, 'success');
-          app.init();
-        } catch (err) {
-          btn.disabled = false;
-          app.updateSubmitButtonLabel(app.currentSelectedRole || 'admin');
-          errBox.innerHTML = `
-            <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-              <span>${icons.alert}</span>
-              <div>${err.message || 'Authentication failed'}</div>
-            </div>
-          `;
-        }
-      });
+    if (role === 'admin') {
+      if (emailInput) emailInput.value = 'admin@brightloop.com';
+      if (passInput) passInput.value = 'Brightloop#2026';
+    } else if (role === 'staff') {
+      if (emailInput) emailInput.value = 'staff@brightloop.com';
+      if (passInput) passInput.value = 'StaffPass#2026';
+    } else if (role === 'customer') {
+      if (emailInput) emailInput.value = 'customer@shopmate.com';
+      if (passInput) passInput.value = 'CustomerPass#2026';
     }
 
-    // Bind register form
-    const regForm = document.getElementById('modal-register-form');
-    if (regForm) {
-      regForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const contactName = document.getElementById('reg-contact-name').value.trim();
-        const companyName = document.getElementById('reg-company-name').value.trim();
-        const email = document.getElementById('reg-email').value.trim();
-        const password = document.getElementById('reg-password').value;
-        const btn = document.getElementById('modal-register-btn');
-        const errBox = document.getElementById('modal-register-error');
-        errBox.innerHTML = '';
+    this.updateSubmitButtonLabel(role);
+  },
 
-        btn.disabled = true;
-        btn.innerHTML = `<span class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px;"></span><span>Provisioning account...</span>`;
+  updateSubmitButtonLabel(role) {
+    const labelEl = document.getElementById('login-submit-label');
+    if (!labelEl) return;
+    if (role === 'admin') {
+      labelEl.textContent = 'Sign In as System Administrator';
+    } else if (role === 'staff') {
+      labelEl.textContent = 'Sign In as Sales Operations';
+    } else if (role === 'customer') {
+      labelEl.textContent = 'Sign In as Client Portal';
+    } else {
+      labelEl.textContent = 'Sign In to Platform';
+    }
+  },
 
-        try {
-          await window.api.register({ name: contactName, companyName, email, password });
-          window.components?.toast.show('Account created! Signing in...', 'success');
-          const loginRes = await window.api.login(email, password);
-          window.api.setToken(loginRes.token);
-          window.api.setUser(loginRes.user);
-          window.components?.modal.close();
-          app.init();
-        } catch (err) {
-          btn.disabled = false;
-          btn.innerHTML = `<span>Complete Customer Registration</span><span>${icons.arrowRight}</span>`;
-          errBox.innerHTML = `
-            <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px;">
-              ${err.message || 'Registration failed'}
-            </div>
-          `;
-        }
-      });
+  async handleLoginSubmit(e) {
+    if (e) e.preventDefault();
+    const icons = window.components?.icons || {};
+    const emailInput = document.getElementById('login-email');
+    const passInput = document.getElementById('login-password');
+    const btn = document.getElementById('modal-login-btn');
+    const errBox = document.getElementById('modal-login-error');
+
+    if (!emailInput || !passInput) return;
+    const email = emailInput.value.trim();
+    const password = passInput.value;
+
+    if (errBox) errBox.innerHTML = '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px;"></span><span>Verifying credentials...</span>`;
+    }
+
+    try {
+      const res = await window.api.login(email, password);
+      window.api.setToken(res.token);
+      window.api.setUser(res.user);
+      window.components?.modal.close();
+      window.components?.toast.show(`Welcome back, ${res.user.name}!`, 'success');
+      this.init();
+    } catch (err) {
+      if (btn) {
+        btn.disabled = false;
+        this.updateSubmitButtonLabel(this.currentSelectedRole || 'admin');
+      }
+      if (errBox) {
+        errBox.innerHTML = `
+          <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+            <span>${icons.alert || '⚠️'}</span>
+            <div>${err.message || 'Authentication failed'}</div>
+          </div>
+        `;
+      }
+    }
+  },
+
+  async handleRegisterSubmit(e) {
+    if (e) e.preventDefault();
+    const icons = window.components?.icons || {};
+    const contactName = document.getElementById('reg-contact-name').value.trim();
+    const companyName = document.getElementById('reg-company-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const password = document.getElementById('reg-password').value;
+    const btn = document.getElementById('modal-register-btn');
+    const errBox = document.getElementById('modal-register-error');
+
+    if (errBox) errBox.innerHTML = '';
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<span class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px;"></span><span>Provisioning account...</span>`;
+    }
+
+    try {
+      await window.api.register({ name: contactName, companyName, email, password });
+      window.components?.toast.show('Account created! Signing in...', 'success');
+      const loginRes = await window.api.login(email, password);
+      window.api.setToken(loginRes.token);
+      window.api.setUser(loginRes.user);
+      window.components?.modal.close();
+      this.init();
+    } catch (err) {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<span>Complete Customer Registration</span><span>${icons.arrowRight}</span>`;
+      }
+      if (errBox) {
+        errBox.innerHTML = `
+          <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px;">
+            ${err.message || 'Registration failed'}
+          </div>
+        `;
+      }
     }
   },
 
@@ -555,7 +598,7 @@ const app = {
     this.showLanding();
     this.showLoginModal(defaultRole);
   },
-
+  
   showForgotPasswordModal() {
     const icons = window.components?.icons || {};
     window.components?.modal.show({
