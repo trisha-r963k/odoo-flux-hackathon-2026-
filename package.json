@@ -1,0 +1,59 @@
+{
+  "name": "brightloop-subscription-system",
+  "version": "1.0.0",
+  "description": "Unified Subscription & Recurring Billing Engine for Brightloop Software (Odoo x FLUX Hackathon 2026)",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "server:start": "node server/index.js",
+    "next:dev": "next dev",
+    "next:build": "prisma generate && next build",
+    "next:start": "next start",
+    "seed": "node -e \"require('./server/db/database').seedDatabase(true); console.log('Database re-seeded!');\"",
+    "db:push": "prisma db push",
+    "db:generate": "prisma generate",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "prisma studio",
+    "test": "tsx tests/unit/auth.test.ts && tsx tests/unit/pricing.test.ts && tsx tests/integration/auth-e2e.test.ts",
+    "test:auth": "tsx tests/unit/auth.test.ts",
+    "test:pricing": "tsx tests/unit/pricing.test.ts",
+    "test:integration": "tsx tests/integration/auth-e2e.test.ts"
+  },
+  "dependencies": {
+    "@node-rs/argon2": "^2.0.2",
+    "@prisma/client": "^5.22.0",
+    "bullmq": "^5.41.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "decimal.js": "^10.4.3",
+    "ioredis": "^5.4.1",
+    "lucide-react": "^0.469.0",
+    "next": "14.2.24",
+    "next-auth": "^4.24.11",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwind-merge": "^2.5.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.6",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^3.4.14",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  },
+  "keywords": [
+    "odoo",
+    "subscription-management",
+    "recurring-billing",
+    "mrr",
+    "hackathon-2026"
+  ],
+  "author": "Brightloop Hackathon Team",
+  "license": "MIT"
+}
