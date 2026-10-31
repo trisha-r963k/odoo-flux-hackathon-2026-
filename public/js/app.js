@@ -36,8 +36,22 @@ const app = {
   applyTheme(theme) {
     this.currentTheme = theme;
     document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.className = theme + '-theme';
+    if (document.body) {
+      document.body.setAttribute('data-theme', theme);
+      document.body.classList.remove('dark-theme', 'light-theme');
+      document.body.classList.add(theme + '-theme');
+    }
+    const wrapper = document.querySelector('.site-wrapper');
+    if (wrapper) {
+      wrapper.setAttribute('data-theme', theme);
+      wrapper.classList.remove('dark-theme', 'light-theme');
+      wrapper.classList.add(theme + '-theme');
+    }
     if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('brightloop_theme', theme);
+      try {
+        localStorage.setItem('brightloop_theme', theme);
+      } catch (_) {}
     }
     const icons = window.components?.icons || {};
     document.querySelectorAll('.theme-toggle-btn').forEach(btn => {
@@ -129,7 +143,7 @@ const app = {
     const icons = window.components?.icons || {};
 
     root.innerHTML = `
-      <div class="site-wrapper">
+      <div class="site-wrapper ${this.currentTheme === 'light' ? 'light-theme' : 'dark-theme'}" data-theme="${this.currentTheme}">
         <!-- Sticky Top Navigation Bar -->
         <header class="site-header">
           <div class="site-header-inner">
@@ -362,6 +376,7 @@ const app = {
         </footer>
       </div>
     `;
+    this.applyTheme(this.currentTheme);
   },
 
   switchShowcaseTab(tab) {
@@ -485,7 +500,8 @@ const app = {
           <div class="status-chip success">PAID &bull; SETTLED</div>
         </div>
 
-        <table class="clean-table">
+        <div class="table-scroll-shell">
+          <table class="clean-table">
           <thead>
             <tr>
               <th>Line Item Description</th>
@@ -529,6 +545,7 @@ const app = {
             </tr>
           </tfoot>
         </table>
+        </div>
 
         <div class="panel-footer-meta">
           <span>🛡️ Strict Period Idempotency &bull; 0 Duplicate Billing Records Allowed</span>
