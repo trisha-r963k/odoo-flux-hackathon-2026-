@@ -157,14 +157,130 @@ const server = http.createServer(async (req, res) => {
         return sendJSON(res, 200, { plans });
       }
 
+      // 4b. Customers Catalog (List & Quick-Create)
+      if (pathname === '/api/customers' && method === 'GET') {
+        const customers = db.prepare(`
+          SELECT id, name, email, role, created_at,
+                 name as company_name,
+                 name as contact_name
+          FROM users
+          WHERE role = 'customer'
+          ORDER BY name ASC
+        `).all();
+        return sendJSON(res, 200, { customers });
+      }
+
+      if (pathname === '/api/customers' && method === 'POST') {
+        const body = await parseBody(req);
+        const { name, email, companyName, contactName, phone } = body;
+        if (!email) {
+          return sendJSON(res, 400, { error: 'Customer email is required' });
+        }
+        const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email.toLowerCase().trim());
+        if (existing) {
+          return sendJSON(res, 400, { error: 'Customer with this email already exists' });
+        }
+        const custId = 'usr_cust_' + Math.random().toString(36).substring(2, 9);
+        const displayName = companyName || name || (email.split('@')[0]);
+        const passHash = 'scrypt:customer';
+        db.prepare(`
+          INSERT INTO users (id, name, email, password_hash, role)
+          VALUES (?, ?, ?, ?, 'customer')
+        `).run(custId, displayName, email.toLowerCase().trim(), passHash);
+
+        return sendJSON(res, 201, {
+          message: 'Customer account created',
+          customer: { id: custId, name: displayName, email: email.toLowerCase().trim(), role: 'customer' }
+        });
+      }
+
+      // 4c. Promotional Discounts (List & Live Validation)
+      if (pathname === '/api/discounts' && method === 'GET') {
+        const discounts = db.prepare('SELECT * FROM discount_rules').all();
+        return sendJSON(res, 200, { discounts });
+      }
+
+      if (pathname === '/api/discounts/validate' && (method === 'GET' || method === 'POST')) {
+        let code = '';
+        let quantity = 1;
+        let subtotal = 0;
+
+        if (method === 'GET') {
+          code = (parsedUrl.query.code || '').trim().toUpperCase();
+          quantity = parseInt(parsedUrl.query.quantity || '1', 10);
+          subtotal = parseFloat(parsedUrl.query.subtotal || '0');
+        } else {
+          const body = await parseBody(req);
+          code = (body.code || '').trim().toUpperCase();
+          quantity = parseInt(body.quantity || '1', 10);
+          subtotal = parseFloat(body.subtotal || '0');
+        }
+
+        if (!code) {
+          return sendJSON(res, 400, { valid: false, error: 'Coupon code is required' });
+        }
+
+        const rule = db.prepare('SELECT * FROM discount_rules WHERE code = ?').get(code);
+        if (!rule) {
+          return sendJSON(res, 404, { valid: false, error: `Coupon code '${code}' not found` });
+        }
+
+        if (rule.min_quantity && quantity < rule.min_quantity) {
+          return sendJSON(res, 200, {
+            valid: false,
+            rule,
+            error: `Coupon '${code}' requires minimum ${rule.min_quantity} seats (current: ${quantity})`
+          });
+        }
+
+        if (rule.min_purchase && subtotal < rule.min_purchase) {
+          return sendJSON(res, 200, {
+            valid: false,
+            rule,
+            error: `Coupon '${code}' requires minimum purchase spend of $${rule.min_purchase.toFixed(2)}`
+          });
+        }
+
+        if (rule.usage_limit && rule.times_used >= rule.usage_limit) {
+          return sendJSON(res, 200, {
+            valid: false,
+            rule,
+            error: `Coupon '${code}' has reached its maximum usage limit`
+          });
+        }
+
+        return sendJSON(res, 200, {
+          valid: true,
+          rule,
+          message: `Coupon '${code}' applied: ${rule.discount_type === 'percentage' ? `${rule.value}% discount` : `$${rule.value} off`}`
+        });
+      }
+
+      // Helper for sequential numbering: QT-2026-XXXX for quotations, SUB-2026-XXXX for active subscriptions
+      function getNextSequentialNumber(prefix = 'QT-2026-') {
+        const rows = db.prepare(`SELECT sub_number FROM subscriptions WHERE sub_number LIKE 'QT-2026-%' OR sub_number LIKE 'SUB-2026-%'`).all();
+        let maxSeq = 0;
+        for (const r of rows) {
+          const match = r.sub_number.match(/(?:QT|SUB)-2026-(\d+)/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num > maxSeq) maxSeq = num;
+          }
+        }
+        const nextSeq = maxSeq + 1;
+        return `${prefix}${String(nextSeq).padStart(4, '0')}`;
+      }
+
       // 5. Subscriptions: List
       if (pathname === '/api/subscriptions' && method === 'GET') {
         const { role, customerId } = parsedUrl.query;
         let query = `
-          SELECT s.*, u.name as customer_name, u.email as customer_email, p.name as plan_name, p.billing_frequency
+          SELECT s.*, u.name as customer_name, u.email as customer_email, p.name as plan_name, p.billing_frequency,
+                 d.code as discount_code, d.value as discount_value, d.discount_type
           FROM subscriptions s
           JOIN users u ON s.customer_id = u.id
           JOIN plans p ON s.plan_id = p.id
+          LEFT JOIN discount_rules d ON s.discount_id = d.id
         `;
         const params = [];
 
@@ -182,7 +298,16 @@ const server = http.createServer(async (req, res) => {
       // 6. Subscriptions: Create (Quotation to Subscription)
       if (pathname === '/api/subscriptions' && method === 'POST') {
         const body = await parseBody(req);
-        const { customerId, planId, lines = [], paymentTerms = 'Immediate Payment', discountId = null } = body;
+        const {
+          customerId,
+          planId,
+          lines = [],
+          paymentTerms = 'Immediate Payment',
+          discountId = null,
+          discountCode = null,
+          status = 'quotation',
+          totalAmount: clientTotalAmount = null
+        } = body;
 
         if (!customerId || !planId) {
           return sendJSON(res, 400, { error: 'Customer ID and Plan ID are required' });
@@ -191,13 +316,80 @@ const server = http.createServer(async (req, res) => {
         const plan = db.prepare('SELECT * FROM plans WHERE id = ?').get(planId);
         if (!plan) return sendJSON(res, 404, { error: 'Plan not found' });
 
+        // Resolve discount if code provided
+        let resolvedDiscountId = discountId;
+        let discountRule = null;
+        if (discountCode) {
+          discountRule = db.prepare('SELECT * FROM discount_rules WHERE code = ?').get(discountCode.trim().toUpperCase());
+          if (discountRule) {
+            resolvedDiscountId = discountRule.id;
+          }
+        } else if (discountId) {
+          discountRule = db.prepare('SELECT * FROM discount_rules WHERE id = ?').get(discountId);
+        }
+
+        const initialStatus = ['draft', 'quotation', 'confirmed', 'active'].includes(status) ? status : 'quotation';
+        const isQuote = ['draft', 'quotation'].includes(initialStatus);
+        const prefix = isQuote ? 'QT-2026-' : 'SUB-2026-';
         const subId = 'sub_' + Math.random().toString(36).substring(2, 9);
-        const subNumber = 'SUB-2026-' + String(Math.floor(1000 + Math.random() * 9000));
+        const subNumber = getNextSequentialNumber(prefix);
         const today = new Date().toISOString().split('T')[0];
 
-        let totalAmount = 0.0;
+        let calculatedSubtotal = 0.0;
+        let totalQuantity = 0;
+
+        for (const line of lines) {
+          const qty = Math.max(1, line.quantity || 1);
+          const unitPrice = parseFloat(line.unitPrice) || 0;
+          totalQuantity += qty;
+          calculatedSubtotal += unitPrice * qty;
+        }
+
+        if (lines.length === 0) {
+          calculatedSubtotal = plan.price;
+        }
+
+        // Compute exact financial total with discount & tax
+        let discountAmount = 0.0;
+        if (discountRule) {
+          const meetsQty = !discountRule.min_quantity || totalQuantity >= discountRule.min_quantity;
+          const meetsSpend = !discountRule.min_purchase || calculatedSubtotal >= discountRule.min_purchase;
+          if (meetsQty && meetsSpend) {
+            if (discountRule.discount_type === 'percentage') {
+              discountAmount = Math.round((calculatedSubtotal * (discountRule.value / 100)) * 100) / 100;
+            } else {
+              discountAmount = Math.min(discountRule.value, calculatedSubtotal);
+            }
+          }
+        }
+
+        const taxableAmount = Math.max(0, calculatedSubtotal - discountAmount);
+        const taxAmount = Math.round((taxableAmount * 0.18) * 100) / 100;
+        const grandTotal = clientTotalAmount !== null ? parseFloat(clientTotalAmount) : Math.round((taxableAmount + taxAmount) * 100) / 100;
+
         db.exec('BEGIN TRANSACTION;');
         try {
+          // 1. Insert subscription record first to satisfy foreign key constraints
+          db.prepare(`
+            INSERT INTO subscriptions (
+              id, sub_number, customer_id, plan_id, status, start_date, next_billing_date,
+              payment_terms, discount_id, total_recurring_amount
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `).run(
+            subId,
+            subNumber,
+            customerId,
+            planId,
+            initialStatus,
+            today,
+            today,
+            paymentTerms,
+            resolvedDiscountId,
+            grandTotal
+          );
+
+          // 2. Insert line items
           const insertLine = db.prepare(`
             INSERT INTO subscription_lines (id, subscription_id, product_id, variant_id, quantity, unit_price, tax_rate, subtotal)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -205,35 +397,85 @@ const server = http.createServer(async (req, res) => {
 
           for (const line of lines) {
             const lineId = 'line_' + Math.random().toString(36).substring(2, 9);
+            const qty = Math.max(1, line.quantity || 1);
+            const unitPrice = parseFloat(line.unitPrice) || 0;
+            const lineSubtotal = unitPrice * qty;
+
             insertLine.run(
               lineId,
               subId,
               line.productId,
               line.variantId || null,
-              line.quantity || 1,
-              line.unitPrice,
+              qty,
+              unitPrice,
               0.18,
-              line.unitPrice * (line.quantity || 1)
+              lineSubtotal
             );
-            totalAmount += line.unitPrice * (line.quantity || 1);
           }
 
-          if (lines.length === 0) {
-            totalAmount = plan.price;
+          if (discountRule && discountAmount > 0) {
+            db.prepare('UPDATE discount_rules SET times_used = times_used + 1 WHERE id = ?').run(discountRule.id);
           }
-
-          db.prepare(`
-            INSERT INTO subscriptions (id, sub_number, customer_id, plan_id, status, start_date, next_billing_date, payment_terms, discount_id, total_recurring_amount)
-            VALUES (?, ?, ?, ?, 'draft', ?, ?, ?, ?, ?)
-          `).run(subId, subNumber, customerId, planId, today, today, paymentTerms, discountId, totalAmount);
 
           db.exec('COMMIT;');
+          return sendJSON(res, 201, {
+            message: `${isQuote ? 'Quotation' : 'Subscription'} created successfully`,
+            subId,
+            subNumber,
+            status: initialStatus,
+            totalAmount: grandTotal,
+            subtotal: calculatedSubtotal,
+            discountAmount,
+            taxAmount
+          });
         } catch (err) {
           db.exec('ROLLBACK;');
           throw err;
         }
+      }
 
-        return sendJSON(res, 201, { message: 'Quotation created successfully', subId, subNumber, totalAmount });
+      // 6b. Subscriptions: Get Single Details
+      const singleSubMatch = pathname.match(/^\/api\/subscriptions\/([^/]+)$/);
+      if (singleSubMatch && method === 'GET') {
+        const subId = singleSubMatch[1];
+        const sub = db.prepare(`
+          SELECT s.*, u.name as customer_name, u.email as customer_email,
+                 p.name as plan_name, p.billing_frequency, p.price as plan_price,
+                 d.code as discount_code, d.value as discount_value, d.discount_type
+          FROM subscriptions s
+          JOIN users u ON s.customer_id = u.id
+          JOIN plans p ON s.plan_id = p.id
+          LEFT JOIN discount_rules d ON s.discount_id = d.id
+          WHERE s.id = ?
+        `).get(subId);
+
+        if (!sub) return sendJSON(res, 404, { error: 'Subscription or quotation not found' });
+
+        const lines = db.prepare(`
+          SELECT sl.*, pr.name as product_name, pr.sales_price as product_base_price,
+                 pv.variant_name, pv.price_extra
+          FROM subscription_lines sl
+          JOIN products pr ON sl.product_id = pr.id
+          LEFT JOIN product_variants pv ON sl.variant_id = pv.id
+          WHERE sl.subscription_id = ?
+        `).all(subId);
+
+        return sendJSON(res, 200, { subscription: { ...sub, lines } });
+      }
+
+      // 6c. Subscriptions: Delete Draft / Quotation
+      if (singleSubMatch && method === 'DELETE') {
+        const subId = singleSubMatch[1];
+        db.exec('BEGIN TRANSACTION;');
+        try {
+          db.prepare('DELETE FROM subscription_lines WHERE subscription_id = ?').run(subId);
+          db.prepare('DELETE FROM subscriptions WHERE id = ?').run(subId);
+          db.exec('COMMIT;');
+          return sendJSON(res, 200, { message: 'Quotation deleted successfully', subId });
+        } catch (err) {
+          db.exec('ROLLBACK;');
+          throw err;
+        }
       }
 
       // 7. Subscriptions: State Machine Transition (Draft -> Quotation -> Confirmed -> Active -> Paused -> Closed)
@@ -244,11 +486,34 @@ const server = http.createServer(async (req, res) => {
         const validStatuses = ['draft', 'quotation', 'confirmed', 'active', 'paused', 'closed'];
 
         if (!validStatuses.includes(status)) {
-          return sendJSON(res, 400, { error: 'Invalid subscription status' });
+          return sendJSON(res, 400, { error: `Invalid subscription status '${status}'. Valid: ${validStatuses.join(', ')}` });
         }
 
-        db.prepare('UPDATE subscriptions SET status = ? WHERE id = ?').run(status, subId);
-        return sendJSON(res, 200, { message: `Subscription status updated to ${status}`, subId, status });
+        const existingSub = db.prepare('SELECT * FROM subscriptions WHERE id = ?').get(subId);
+        if (!existingSub) {
+          return sendJSON(res, 404, { error: 'Subscription not found' });
+        }
+
+        let updatedSubNumber = existingSub.sub_number;
+        // When converting from quotation/draft to confirmed or active: switch prefix from QT-2026- to SUB-2026-
+        if (['confirmed', 'active'].includes(status) && updatedSubNumber.startsWith('QT-2026-')) {
+          updatedSubNumber = updatedSubNumber.replace('QT-2026-', 'SUB-2026-');
+        } else if (['draft', 'quotation'].includes(status) && updatedSubNumber.startsWith('SUB-2026-')) {
+          updatedSubNumber = updatedSubNumber.replace('SUB-2026-', 'QT-2026-');
+        }
+
+        db.prepare('UPDATE subscriptions SET status = ?, sub_number = ? WHERE id = ?').run(
+          status,
+          updatedSubNumber,
+          subId
+        );
+
+        return sendJSON(res, 200, {
+          message: `Subscription status updated to ${status}`,
+          subId,
+          status,
+          subNumber: updatedSubNumber
+        });
       }
 
       // 8. Invoices: List

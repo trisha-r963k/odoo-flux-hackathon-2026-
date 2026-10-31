@@ -516,26 +516,110 @@ const app = {
     }
   },
 
+  async transitionSubscription(subId, newStatus) {
+    try {
+      const res = await window.api.updateSubscriptionStatus(subId, newStatus);
+      alert(`Subscription ${res.subNumber || subId} transitioned to ${newStatus.toUpperCase()}!`);
+      this.init();
+    } catch (err) {
+      alert('Failed to update subscription status: ' + err.message);
+    }
+  },
+
+  filterSubscriptions(statusFilter) {
+    this._subFilter = statusFilter;
+    const rows = document.querySelectorAll('.sub-table-row');
+    rows.forEach(r => {
+      const s = r.getAttribute('data-status');
+      if (statusFilter === 'all') {
+        r.style.display = '';
+      } else if (statusFilter === 'quotes') {
+        r.style.display = (s === 'draft' || s === 'quotation') ? '' : 'none';
+      } else if (statusFilter === 'active') {
+        r.style.display = (s === 'active' || s === 'confirmed') ? '' : 'none';
+      } else if (statusFilter === 'paused') {
+        r.style.display = (s === 'paused') ? '' : 'none';
+      } else {
+        r.style.display = (s === statusFilter) ? '' : 'none';
+      }
+    });
+
+    document.querySelectorAll('.filter-tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-filter') === statusFilter);
+    });
+  },
+
   renderDashboard(user, analytics, subs = [], invoices = []) {
     const root = document.getElementById('app-root');
     const header = window.components?.renderHeader(user) || '';
     const m = analytics?.metrics || { mrr: 1474.83, activeSubscriptions: 2, cashCollected: 1090.77, overdueAmount: 1090.77 };
     const sla = analytics?.slaBenchmark || { actualExecutionTimeMs: 0.6, slaTarget: '< 2000 ms', slaPassed: true };
 
-    const subRowsHtml = subs.map(s => `
-      <tr style="border-bottom: 1px solid #f1f5f9;">
-        <td style="padding: 14px 20px; font-weight: 600; color: #714b67;">${s.sub_number}</td>
-        <td style="padding: 14px 20px;">${s.customer_name || 'Enterprise Client'}</td>
-        <td style="padding: 14px 20px;">${s.plan_name || 'Standard Plan'}</td>
-        <td style="padding: 14px 20px;">${s.next_billing_date || '2026-10-31'}</td>
-        <td style="padding: 14px 20px; font-weight: 600;">$${Number(s.total_recurring_amount).toFixed(2)}</td>
-        <td style="padding: 14px 20px;">
-          <span class="badge ${s.status === 'active' ? 'badge-active' : s.status === 'quotation' ? 'badge-quotation' : 'badge-confirmed'}">
-            ${s.status.toUpperCase()}
-          </span>
-        </td>
-      </tr>
-    `).join('');
+    const getBadgeClass = (status) => {
+      switch (status) {
+        case 'active': return 'badge-active';
+        case 'quotation': return 'badge-quotation';
+        case 'draft': return 'badge-draft';
+        case 'confirmed': return 'badge-confirmed';
+        case 'paused': return 'badge-paused';
+        case 'closed': return 'badge-closed';
+        default: return 'badge-draft';
+      }
+    };
+
+    const subRowsHtml = subs.map(s => {
+      const isQuote = s.status === 'draft' || s.status === 'quotation';
+      const badgeClass = getBadgeClass(s.status);
+
+      let actionButtons = '';
+      if (s.status === 'draft') {
+        actionButtons = `
+          <button onclick="app.transitionSubscription('${s.id}', 'quotation')" title="Send quote to customer" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #fef3c7; color: #92400e; border: 1px solid #fde68a; border-radius: 4px; cursor: pointer; margin-right: 4px;">Send Quote</button>
+          <button onclick="app.transitionSubscription('${s.id}', 'active')" title="Convert to Active Subscription (SUB-2026-XXXX)" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer;">Activate</button>
+        `;
+      } else if (s.status === 'quotation') {
+        actionButtons = `
+          <button onclick="app.transitionSubscription('${s.id}', 'active')" title="Customer Accepts Quote -> Converts to SUB-2026-XXXX" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer; margin-right: 4px;">Accept &amp; Activate</button>
+          <button onclick="app.transitionSubscription('${s.id}', 'closed')" title="Cancel Quotation" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">Cancel</button>
+        `;
+      } else if (s.status === 'active') {
+        actionButtons = `
+          <button onclick="app.transitionSubscription('${s.id}', 'paused')" title="Pause recurring billing" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #fed7aa; color: #9a3412; border: 1px solid #fdba74; border-radius: 4px; cursor: pointer; margin-right: 4px;">Pause</button>
+          <button onclick="app.transitionSubscription('${s.id}', 'closed')" title="Close contract" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; border-radius: 4px; cursor: pointer;">Close</button>
+        `;
+      } else if (s.status === 'paused') {
+        actionButtons = `
+          <button onclick="app.transitionSubscription('${s.id}', 'active')" title="Resume recurring billing" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; border-radius: 4px; cursor: pointer;">Resume</button>
+        `;
+      } else if (s.status === 'closed') {
+        actionButtons = `
+          <button onclick="app.transitionSubscription('${s.id}', 'draft')" title="Reopen as Draft Quote" style="padding: 4px 8px; font-size: 11px; font-weight: 700; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer;">Reopen</button>
+        `;
+      }
+
+      return `
+        <tr class="sub-table-row" data-status="${s.status}" style="border-bottom: 1px solid #f1f5f9;">
+          <td style="padding: 14px 20px; font-weight: 700; font-family: monospace; color: ${isQuote ? '#b45309' : '#714b67'};">
+            ${s.sub_number}
+          </td>
+          <td style="padding: 14px 20px; font-weight: 600;">${s.customer_name || 'Enterprise Client'}</td>
+          <td style="padding: 14px 20px;">
+            <div style="font-weight: 600;">${s.plan_name || 'Standard Plan'}</div>
+            <div style="font-size: 11px; color: #64748b; text-transform: uppercase;">${s.billing_frequency || 'monthly'}</div>
+          </td>
+          <td style="padding: 14px 20px;">${s.next_billing_date || '2026-10-31'}</td>
+          <td style="padding: 14px 20px; font-weight: 700; font-family: monospace;">$${Number(s.total_recurring_amount).toFixed(2)}</td>
+          <td style="padding: 14px 20px;">
+            <span class="badge ${badgeClass}">
+              ${s.status.toUpperCase()}
+            </span>
+          </td>
+          <td style="padding: 14px 20px; text-align: right; white-space: nowrap;">
+            ${actionButtons}
+          </td>
+        </tr>
+      `;
+    }).join('');
 
     const invoiceRowsHtml = invoices.map(i => `
       <tr style="border-bottom: 1px solid #f1f5f9;">
@@ -565,8 +649,11 @@ const app = {
                 Logged in as <strong>${user.name}</strong> • Real-time SQLite WAL data feed (<span style="color: #10b981; font-weight: 700;">${sla.actualExecutionTimeMs} ms</span> SLA).
               </p>
             </div>
-            <div style="display: flex; gap: 10px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
               ${user.role !== 'customer' ? `
+                <button onclick="app.showQuotationBuilder()" style="background: #008784; color: #fff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,135,132,0.25); display: flex; align-items: center; gap: 6px;">
+                  📝 + New Quotation
+                </button>
                 <button id="btn-run-billing" onclick="app.triggerBillingRun()" style="background: linear-gradient(135deg, #714b67, #9333ea); color: #fff; border: none; padding: 9px 18px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; box-shadow: 0 2px 4px rgba(113,75,103,0.25);">
                   ⚡ Run Automated Billing Day Engine
                 </button>
@@ -601,26 +688,36 @@ const app = {
             </div>
           </div>
 
-          <!-- Subscriptions Table -->
+          <!-- Subscriptions & Quotations Master Table with Lifecycle Actions -->
           <div style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 28px;">
-            <div style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;">Active Subscriptions & Recurring Lifecycles</h3>
-              <span style="font-size: 12px; color: #64748b;">${subs.length} records in database</span>
+            <div style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;">Subscriptions &amp; Quotations Master List</h3>
+                <span style="font-size: 12px; color: #64748b;">${subs.length} total records • Full 6-state lifecycle tracking</span>
+              </div>
+              <!-- Status Filter Tabs -->
+              <div class="filter-tabs-row" style="margin-bottom: 0; border-bottom: none;">
+                <button class="filter-tab-btn active" data-filter="all" onclick="app.filterSubscriptions('all')">All</button>
+                <button class="filter-tab-btn" data-filter="quotes" onclick="app.filterSubscriptions('quotes')">Quotes &amp; Drafts</button>
+                <button class="filter-tab-btn" data-filter="active" onclick="app.filterSubscriptions('active')">Active</button>
+                <button class="filter-tab-btn" data-filter="paused" onclick="app.filterSubscriptions('paused')">Paused</button>
+              </div>
             </div>
             <div style="overflow-x: auto;">
               <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13.5px;">
                 <thead>
                   <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #64748b; font-size: 12px; text-transform: uppercase;">
-                    <th style="padding: 12px 20px;">Subscription</th>
+                    <th style="padding: 12px 20px;">Identifier</th>
                     <th style="padding: 12px 20px;">Customer</th>
-                    <th style="padding: 12px 20px;">Plan / Tier</th>
+                    <th style="padding: 12px 20px;">Plan / Frequency</th>
                     <th style="padding: 12px 20px;">Next Billing Date</th>
                     <th style="padding: 12px 20px;">Amount</th>
                     <th style="padding: 12px 20px;">Status</th>
+                    <th style="padding: 12px 20px; text-align: right;">Workflow Actions</th>
                   </tr>
                 </thead>
                 <tbody style="color: #334155;">
-                  ${subRowsHtml || '<tr><td colspan="6" style="padding: 24px; text-align: center; color: #94a3b8;">No subscriptions recorded</td></tr>'}
+                  ${subRowsHtml || '<tr><td colspan="7" style="padding: 24px; text-align: center; color: #94a3b8;">No subscriptions recorded</td></tr>'}
                 </tbody>
               </table>
             </div>
@@ -629,7 +726,7 @@ const app = {
           <!-- Invoices Table -->
           <div style="background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
             <div style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-              <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;">Invoices & Billing Statements</h3>
+              <h3 style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;">Invoices &amp; Billing Statements</h3>
               <span style="font-size: 12px; color: #64748b;">Generated from Billing Engine</span>
             </div>
             <div style="overflow-x: auto;">
@@ -653,6 +750,747 @@ const app = {
         </main>
       </div>
     `;
+  },
+
+  // =========================================================
+  // OBJECTIVE 4: INTERACTIVE QUOTATION BUILDER & WORKFLOW
+  // =========================================================
+  async showQuotationBuilder(presetOptions = null) {
+    const root = document.getElementById('app-root');
+    root.innerHTML = `
+      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; font-family: sans-serif; color: #64748b;">
+        Loading Quotation Builder &amp; Catalog...
+      </div>
+    `;
+
+    try {
+      const [products, plans, customers] = await Promise.all([
+        window.api.getProducts(),
+        window.api.getPlans(),
+        window.api.getCustomers()
+      ]);
+
+      this._quoteState = {
+        products,
+        plans,
+        customers,
+        selectedCustomerId: customers.find(c => c.name.toLowerCase().includes('acme'))?.id || customers[0]?.id || '',
+        selectedPlanId: plans[0]?.id || '',
+        paymentTerms: 'Net 30',
+        couponCode: '',
+        appliedDiscount: null,
+        discountStatus: null, // { success: boolean, message: string }
+        lines: [
+          {
+            id: 'line_' + Date.now(),
+            productId: products[0]?.id || '',
+            variantId: products[0]?.variants?.[0]?.id || '',
+            basePrice: products[0]?.sales_price || 1200.0,
+            priceAdjustment: products[0]?.variants?.[0]?.price_extra || 560.0,
+            unitPrice: (products[0]?.sales_price || 1200.0) + (products[0]?.variants?.[0]?.price_extra || 560.0),
+            quantity: 10,
+            taxRatePercent: 18.0
+          }
+        ]
+      };
+
+      if (presetOptions) {
+        Object.assign(this._quoteState, presetOptions);
+      }
+
+      this.renderQuotationBuilder();
+    } catch (err) {
+      alert('Failed to load quotation catalog: ' + err.message);
+      this.init();
+    }
+  },
+
+  loadScene4Preset() {
+    if (!this._quoteState) return;
+    const { products, plans, customers } = this._quoteState;
+
+    // 1. Customer: Acme Corp
+    const acme = customers.find(c => c.name.toLowerCase().includes('acme')) || customers[0];
+    // 2. Product: Brightloop Cloud ERP ($1,200) + Odoo Brand Edition (+$560) = $1,760
+    const erp = products.find(p => p.id === 'prod_erp' || p.name.includes('ERP')) || products[0];
+    const odooVariant = erp?.variants?.find(v => v.id === 'var_odoo_brand' || v.variant_name.includes('Odoo')) || erp?.variants?.[0];
+    // 3. Plan: Monthly Pro
+    const monthlyPlan = plans.find(p => p.id === 'plan_monthly_pro' || p.billing_frequency === 'monthly') || plans[0];
+
+    const basePrice = erp ? Number(erp.sales_price) : 1200.0;
+    const priceAdjustment = odooVariant ? Number(odooVariant.price_extra) : 560.0;
+    const effectiveUnitPrice = basePrice + priceAdjustment;
+
+    this._quoteState.selectedCustomerId = acme ? acme.id : '';
+    this._quoteState.selectedPlanId = monthlyPlan ? monthlyPlan.id : '';
+    this._quoteState.paymentTerms = 'Net 30';
+    this._quoteState.couponCode = 'ODU20';
+    this._quoteState.appliedDiscount = {
+      code: 'ODU20',
+      type: 'PERCENTAGE',
+      value: 20.0,
+      minQuantity: 5,
+      minPurchaseAmount: 1000.0
+    };
+    this._quoteState.discountStatus = {
+      success: true,
+      message: '✓ Coupon ODU20 Applied: 20% discount on 5+ seats (-$3,520.00)'
+    };
+    this._quoteState.lines = [
+      {
+        id: 'line_' + Date.now(),
+        productId: erp ? erp.id : '',
+        variantId: odooVariant ? odooVariant.id : '',
+        basePrice,
+        priceAdjustment,
+        unitPrice: effectiveUnitPrice,
+        quantity: 10,
+        taxRatePercent: 18.0
+      }
+    ];
+
+    this.renderQuotationBuilder();
+  },
+
+  calculateCurrentTotals() {
+    const state = this._quoteState;
+    if (!state) return { subtotal: 0, discountTotal: 0, taxableSubtotal: 0, taxTotal: 0, grandTotal: 0, totalQty: 0 };
+
+    const D = window.Decimal || class {
+      constructor(v) { this.val = Number(v); }
+      plus(v) { return new D(this.val + Number(v.val !== undefined ? v.val : v)); }
+      minus(v) { return new D(this.val - Number(v.val !== undefined ? v.val : v)); }
+      times(v) { return new D(this.val * Number(v.val !== undefined ? v.val : v)); }
+      dividedBy(v) { return new D(this.val / Number(v.val !== undefined ? v.val : v)); }
+      toDecimalPlaces(dp) { return new D(Number(this.val.toFixed(dp))); }
+      toNumber() { return this.val; }
+      toFixed(dp) { return this.val.toFixed(dp); }
+    };
+
+    let totalQty = 0;
+    let rawSubtotal = new D(0);
+
+    const calculatedLines = state.lines.map(line => {
+      const qty = Math.max(1, parseInt(line.quantity, 10) || 1);
+      totalQty += qty;
+      const unitPrice = new D(line.unitPrice || 0);
+      const lineSubtotal = unitPrice.times(qty);
+      rawSubtotal = rawSubtotal.plus(lineSubtotal);
+      return { ...line, quantity: qty, lineSubtotal };
+    });
+
+    // Discount evaluation
+    let discountApplied = false;
+    let discountTotal = new D(0);
+    let discountMsg = '';
+
+    if (state.appliedDiscount) {
+      const rule = state.appliedDiscount;
+      const meetsQty = !rule.minQuantity || totalQty >= rule.minQuantity;
+      const meetsSpend = !rule.minPurchaseAmount || rawSubtotal.toNumber() >= Number(rule.minPurchaseAmount);
+
+      if (meetsQty && meetsSpend) {
+        discountApplied = true;
+        if (rule.type === 'PERCENTAGE' || rule.discount_type === 'percentage') {
+          const pct = new D(rule.value).dividedBy(100);
+          discountTotal = rawSubtotal.times(pct).toDecimalPlaces(2, 4);
+        } else {
+          discountTotal = new D(Math.min(Number(rule.value), rawSubtotal.toNumber()));
+        }
+        discountMsg = `✓ Coupon ${rule.code} Applied: ${rule.value}% discount (-$${discountTotal.toFixed(2)})`;
+      } else if (!meetsQty) {
+        discountMsg = `⚠️ Coupon ${rule.code} requires minimum ${rule.minQuantity} seats (current: ${totalQty})`;
+      } else {
+        discountMsg = `⚠️ Coupon ${rule.code} requires minimum spend of $${rule.minPurchaseAmount}`;
+      }
+    }
+
+    const subtotalRounded = rawSubtotal.toDecimalPlaces(2, 4);
+    const discountRounded = discountTotal.toDecimalPlaces(2, 4);
+    const taxableSubtotal = subtotalRounded.minus(discountRounded);
+    const taxTotal = taxableSubtotal.times(new D(0.18)).toDecimalPlaces(2, 4);
+    const grandTotal = taxableSubtotal.plus(taxTotal);
+
+    return {
+      totalQty,
+      subtotal: subtotalRounded.toNumber(),
+      discountTotal: discountRounded.toNumber(),
+      taxableSubtotal: taxableSubtotal.toNumber(),
+      taxTotal: taxTotal.toNumber(),
+      grandTotal: grandTotal.toNumber(),
+      discountApplied,
+      discountMsg,
+      lines: calculatedLines
+    };
+  },
+
+  renderQuotationBuilder() {
+    const root = document.getElementById('app-root');
+    const state = this._quoteState;
+    if (!state) return;
+
+    const user = (window.api && window.api.getUser) ? window.api.getUser() : { name: 'Staff User', role: 'staff' };
+    const header = window.components?.renderHeader(user) || '';
+    const totals = this.calculateCurrentTotals();
+
+    // Customer Options
+    const customerOptions = state.customers.map(c => `
+      <option value="${c.id}" ${c.id === state.selectedCustomerId ? 'selected' : ''}>
+        ${c.company_name || c.name} (${c.email})
+      </option>
+    `).join('');
+
+    // Plan Cards
+    const planCardsHtml = state.plans.map(p => {
+      const isSelected = p.id === state.selectedPlanId;
+      const freqBadge = p.billing_frequency.toUpperCase();
+      const validityBadge = p.end_date ? `Valid until ${p.end_date}` : 'Active Plan';
+      return `
+        <div class="plan-card-option ${isSelected ? 'selected' : ''}" onclick="app.selectPlan('${p.id}')">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="font-size: 14px; color: #1e293b;">${p.name}</strong>
+            <span class="badge ${freqBadge === 'YEARLY' ? 'badge-confirmed' : 'badge-quotation'}">${freqBadge}</span>
+          </div>
+          <div style="font-size: 18px; font-weight: 800; color: #714b67; margin: 8px 0 4px;">
+            $${Number(p.price).toFixed(2)} <span style="font-size: 11px; font-weight: 500; color: #64748b;">/${p.billing_frequency}</span>
+          </div>
+          <div style="font-size: 11.5px; color: #64748b;">${validityBadge}</div>
+        </div>
+      `;
+    }).join('');
+
+    // Line items HTML
+    const lineRowsHtml = state.lines.map((line, idx) => {
+      const currentProduct = state.products.find(p => p.id === line.productId) || state.products[0];
+      const variants = currentProduct?.variants || [];
+      const currentVariant = variants.find(v => v.id === line.variantId) || variants[0];
+
+      const productOptions = state.products.map(p => `
+        <option value="${p.id}" ${p.id === line.productId ? 'selected' : ''}>
+          ${p.name} ($${Number(p.sales_price).toFixed(2)})
+        </option>
+      `).join('');
+
+      const variantOptions = variants.length > 0
+        ? variants.map(v => `
+            <option value="${v.id}" ${v.id === line.variantId ? 'selected' : ''}>
+              ${v.variant_name} (${v.price_extra >= 0 ? '+' : ''}$${Number(v.price_extra).toFixed(2)})
+            </option>
+          `).join('')
+        : `<option value="">Standard Edition (No Variant Surcharge)</option>`;
+
+      const lineSubtotal = (Number(line.unitPrice) || 0) * (Number(line.quantity) || 1);
+
+      return `
+        <tr class="line-item-row" data-index="${idx}">
+          <td style="min-width: 200px;">
+            <select class="form-select" onchange="app.onProductChange(${idx}, this.value)">
+              ${productOptions}
+            </select>
+          </td>
+          <td style="min-width: 220px;">
+            <select class="form-select" onchange="app.onVariantChange(${idx}, this.value)">
+              ${variantOptions}
+            </select>
+          </td>
+          <td style="width: 130px;">
+            <div style="display: flex; align-items: center; position: relative;">
+              <span style="position: absolute; left: 10px; color: #64748b; font-weight: 600;">$</span>
+              <input type="number" step="0.01" class="form-input" style="padding-left: 24px; font-weight: 700;"
+                value="${Number(line.unitPrice).toFixed(2)}"
+                oninput="app.onUnitPriceChange(${idx}, this.value)" />
+            </div>
+          </td>
+          <td style="width: 100px;">
+            <input type="number" min="1" class="form-input" style="font-weight: 700; text-align: center;"
+              value="${line.quantity}"
+              oninput="app.onQuantityChange(${idx}, this.value)" />
+          </td>
+          <td style="width: 90px; text-align: center; color: #64748b; font-weight: 600;">
+            18% VAT
+          </td>
+          <td style="width: 140px; font-weight: 800; font-family: monospace; font-size: 14.5px; color: #1e293b;">
+            $${lineSubtotal.toFixed(2)}
+          </td>
+          <td style="width: 50px; text-align: right;">
+            ${state.lines.length > 1 ? `
+              <button class="btn-remove-line" onclick="app.removeQuoteLine(${idx})" title="Remove item">✕</button>
+            ` : ''}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    root.innerHTML = `
+      <div style="min-height: 100vh; background: #f8fafc; display: flex; flex-direction: column;">
+        ${header}
+        <main class="quote-builder-container">
+          <!-- Header Bar -->
+          <div class="quote-header-bar">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button onclick="app.init()" style="background: none; border: none; font-size: 13px; color: #64748b; cursor: pointer; padding: 0; font-weight: 600;">
+                  ← Back to Dashboard
+                </button>
+                <span style="color: #cbd5e1;">/</span>
+                <span class="badge badge-quotation">Objective 4</span>
+              </div>
+              <h1 style="font-size: 24px; font-weight: 800; color: #1e293b; margin: 6px 0 0;">
+                Interactive Quotation Builder &amp; Workflow
+              </h1>
+              <p style="font-size: 13px; color: #64748b; margin: 4px 0 0;">
+                Assemble contract line items with variant price adjustments, apply promotional coupons, and transition directly into active subscriptions.
+              </p>
+            </div>
+
+            <!-- Scene 4 1-Click Demo Shortcut -->
+            <div>
+              <button onclick="app.loadScene4Preset()" style="background: linear-gradient(135deg, #10b981 0%, #008784 100%); color: #fff; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer; box-shadow: 0 2px 5px rgba(16,185,129,0.3); display: flex; align-items: center; gap: 6px;">
+                ⚡ 1-Click Load Scene 4 Demo Spec
+              </button>
+            </div>
+          </div>
+
+          <!-- Top Grid: Customer & Billing Plan -->
+          <div class="quote-grid-2">
+            <!-- Customer Picker -->
+            <div class="quote-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <label class="form-label" style="margin: 0;">1. Customer Account</label>
+                <button onclick="app.showQuickAddCustomerModal()" style="background: none; border: none; color: var(--primary); font-size: 12.5px; font-weight: 700; cursor: pointer; padding: 0;">
+                  + Quick-Create Customer
+                </button>
+              </div>
+              <select class="form-select" onchange="app.selectCustomer(this.value)">
+                ${customerOptions}
+              </select>
+              <div style="margin-top: 10px; font-size: 12px; color: #64748b;">
+                Quotes are strictly scoped to the selected client organization with sequential tracking.
+              </div>
+
+              <!-- Payment Terms -->
+              <div style="margin-top: 18px;">
+                <label class="form-label">Payment Terms</label>
+                <select class="form-select" onchange="app.selectPaymentTerms(this.value)">
+                  <option value="Immediate Payment" ${state.paymentTerms === 'Immediate Payment' ? 'selected' : ''}>Immediate Payment</option>
+                  <option value="Net 15" ${state.paymentTerms === 'Net 15' ? 'selected' : ''}>Net 15 Days</option>
+                  <option value="Net 30" ${state.paymentTerms === 'Net 30' ? 'selected' : ''}>Net 30 Days (Standard Corporate)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Billing Plan Picker -->
+            <div class="quote-card">
+              <label class="form-label" style="margin-bottom: 12px;">2. Recurring Billing Plan</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                ${planCardsHtml}
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Line Items Editor -->
+          <div class="quote-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 800; color: #1e293b; margin: 0;">
+                  3. Line Items Editor &amp; Smart Variant Pricing
+                </h3>
+                <span style="font-size: 12px; color: #64748b;">
+                  Add products &amp; variants. Surcharges (e.g. +$560.00 Odoo Brand) automatically adjust effective unit price.
+                </span>
+              </div>
+              <button class="btn-add-line" onclick="app.addQuoteLine()">
+                <span>+</span> Add Product Line
+              </button>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table class="line-items-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Attribute Variant (Price Adj)</th>
+                    <th>Unit Price</th>
+                    <th style="text-align: center;">Quantity</th>
+                    <th style="text-align: center;">Tax</th>
+                    <th>Line Subtotal</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${lineRowsHtml}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Bottom Grid: Promotional Discount & Live Calculation Summary -->
+          <div class="quote-grid-2">
+            <!-- Promotional Coupon Code Box -->
+            <div class="quote-card">
+              <h3 style="font-size: 16px; font-weight: 800; color: #1e293b; margin: 0 0 6px;">
+                4. Promotional Discount Coupon
+              </h3>
+              <p style="font-size: 12.5px; color: #64748b; margin: 0 0 14px;">
+                Enter promotional code (e.g. <strong>ODU20</strong> for 20% off when total seats ≥ 5).
+              </p>
+
+              <div class="discount-box">
+                <div class="discount-input-row">
+                  <input type="text" id="input-coupon-code" class="form-input" style="text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;"
+                    placeholder="Enter coupon code (e.g. ODU20)"
+                    value="${state.couponCode}" />
+                  <button class="btn-apply-discount" onclick="app.applyCouponCode()">Apply</button>
+                </div>
+
+                <!-- 1-Click Coupon Test Helper -->
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                  <button type="button" onclick="app.quickFillCoupon('ODU20')" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700; color: #475569; cursor: pointer;">
+                    🏷️ Try 'ODU20' (-20% for 5+ seats)
+                  </button>
+                  <button type="button" onclick="app.quickFillCoupon('FLUX2026')" style="background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px 10px; font-size: 11px; font-weight: 700; color: #475569; cursor: pointer;">
+                    🏷️ Try 'FLUX2026' (-15%)
+                  </button>
+                </div>
+
+                <!-- Live Feedback Pill -->
+                ${totals.discountApplied ? `
+                  <div class="discount-status-pill success">
+                    <span>${totals.discountMsg || `✓ Discount code applied (-$${totals.discountTotal.toFixed(2)})`}</span>
+                  </div>
+                ` : totals.discountMsg ? `
+                  <div class="discount-status-pill warning">
+                    <span>${totals.discountMsg}</span>
+                  </div>
+                ` : state.discountStatus ? `
+                  <div class="discount-status-pill ${state.discountStatus.success ? 'success' : 'warning'}">
+                    <span>${state.discountStatus.message}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Live Financial Totals Breakdown (Decimal.js Exact Calculation) -->
+            <div class="quote-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: 16px; font-weight: 800; color: #1e293b; margin: 0;">
+                  5. Real-Time Decimal.js Billing Calculation
+                </h3>
+                <span style="font-size: 11px; background: #e0e7ff; color: #3730a3; padding: 2px 8px; border-radius: 4px; font-weight: 700;">
+                  BANKER'S ROUNDING
+                </span>
+              </div>
+
+              <div class="totals-summary-card">
+                <div class="totals-row">
+                  <span>Gross Line Subtotal (${totals.totalQty} seats)</span>
+                  <strong style="font-family: monospace; font-size: 15px; color: #1e293b;">
+                    $${totals.subtotal.toFixed(2)}
+                  </strong>
+                </div>
+
+                <div class="totals-row" style="color: ${totals.discountTotal > 0 ? '#059669' : '#64748b'};">
+                  <span>Promotional Discount ${state.couponCode ? `(${state.couponCode})` : ''}</span>
+                  <strong style="font-family: monospace; font-size: 15px;">
+                    -${totals.discountTotal > 0 ? `$${totals.discountTotal.toFixed(2)}` : '$0.00'}
+                  </strong>
+                </div>
+
+                <div class="totals-row" style="border-top: 1px dashed #cbd5e1; padding-top: 10px; margin-top: 4px;">
+                  <span style="font-weight: 600;">Taxable Amount</span>
+                  <strong style="font-family: monospace; font-size: 15px; color: #1e293b;">
+                    $${totals.taxableSubtotal.toFixed(2)}
+                  </strong>
+                </div>
+
+                <div class="totals-row">
+                  <span>Standard VAT (18.00%)</span>
+                  <strong style="font-family: monospace; font-size: 15px; color: #1e293b;">
+                    +$${totals.taxTotal.toFixed(2)}
+                  </strong>
+                </div>
+
+                <div class="totals-row grand-total">
+                  <span>Grand Total (Recurring)</span>
+                  <span style="font-family: monospace;">$${totals.grandTotal.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quotation Actions Footer -->
+          <div class="quote-actions-bar">
+            <button class="btn-action-draft" onclick="app.saveQuotation('draft')">
+              💾 Save as Draft (QT-2026-XXXX)
+            </button>
+            <button class="btn-action-send" onclick="app.saveQuotation('quotation')">
+              ✉️ Send Quotation to Customer
+            </button>
+            <button class="btn-action-activate" onclick="app.saveQuotation('active')">
+              ⚡ Convert to Active Subscription (SUB-2026-XXXX)
+            </button>
+          </div>
+        </main>
+      </div>
+    `;
+  },
+
+  selectCustomer(customerId) {
+    if (this._quoteState) {
+      this._quoteState.selectedCustomerId = customerId;
+    }
+  },
+
+  selectPaymentTerms(terms) {
+    if (this._quoteState) {
+      this._quoteState.paymentTerms = terms;
+    }
+  },
+
+  selectPlan(planId) {
+    if (this._quoteState) {
+      this._quoteState.selectedPlanId = planId;
+      this.renderQuotationBuilder();
+    }
+  },
+
+  addQuoteLine() {
+    if (!this._quoteState) return;
+    const { products } = this._quoteState;
+    const defaultProduct = products[0] || { sales_price: 1200.0, variants: [] };
+    const defaultVariant = defaultProduct.variants?.[0] || null;
+    const basePrice = Number(defaultProduct.sales_price) || 1200.0;
+    const priceAdjustment = defaultVariant ? Number(defaultVariant.price_extra) : 0;
+
+    this._quoteState.lines.push({
+      id: 'line_' + Date.now(),
+      productId: defaultProduct.id,
+      variantId: defaultVariant ? defaultVariant.id : '',
+      basePrice,
+      priceAdjustment,
+      unitPrice: basePrice + priceAdjustment,
+      quantity: 1,
+      taxRatePercent: 18.0
+    });
+    this.renderQuotationBuilder();
+  },
+
+  removeQuoteLine(idx) {
+    if (!this._quoteState || this._quoteState.lines.length <= 1) return;
+    this._quoteState.lines.splice(idx, 1);
+    this.renderQuotationBuilder();
+  },
+
+  onProductChange(idx, productId) {
+    if (!this._quoteState) return;
+    const product = this._quoteState.products.find(p => p.id === productId);
+    if (!product) return;
+
+    const variant = product.variants?.[0] || null;
+    const basePrice = Number(product.sales_price) || 0;
+    const priceAdjustment = variant ? Number(variant.price_extra) : 0;
+
+    const line = this._quoteState.lines[idx];
+    if (line) {
+      line.productId = productId;
+      line.variantId = variant ? variant.id : '';
+      line.basePrice = basePrice;
+      line.priceAdjustment = priceAdjustment;
+      line.unitPrice = basePrice + priceAdjustment;
+    }
+    this.renderQuotationBuilder();
+  },
+
+  onVariantChange(idx, variantId) {
+    if (!this._quoteState) return;
+    const line = this._quoteState.lines[idx];
+    if (!line) return;
+
+    const product = this._quoteState.products.find(p => p.id === line.productId);
+    const variant = product?.variants?.find(v => v.id === variantId);
+
+    const basePrice = Number(line.basePrice) || 0;
+    const priceAdjustment = variant ? Number(variant.price_extra) : 0;
+
+    line.variantId = variantId;
+    line.priceAdjustment = priceAdjustment;
+    line.unitPrice = basePrice + priceAdjustment;
+
+    this.renderQuotationBuilder();
+  },
+
+  onUnitPriceChange(idx, value) {
+    if (!this._quoteState) return;
+    const line = this._quoteState.lines[idx];
+    if (line) {
+      line.unitPrice = Math.max(0, parseFloat(value) || 0);
+    }
+    this.renderQuotationBuilder();
+  },
+
+  onQuantityChange(idx, value) {
+    if (!this._quoteState) return;
+    const line = this._quoteState.lines[idx];
+    if (line) {
+      line.quantity = Math.max(1, parseInt(value, 10) || 1);
+    }
+    this.renderQuotationBuilder();
+  },
+
+  quickFillCoupon(code) {
+    const input = document.getElementById('input-coupon-code');
+    if (input) input.value = code;
+    this.applyCouponCode(code);
+  },
+
+  async applyCouponCode(directCode = null) {
+    if (!this._quoteState) return;
+    const code = (directCode || document.getElementById('input-coupon-code')?.value || '').trim().toUpperCase();
+    this._quoteState.couponCode = code;
+
+    if (!code) {
+      this._quoteState.appliedDiscount = null;
+      this._quoteState.discountStatus = null;
+      this.renderQuotationBuilder();
+      return;
+    }
+
+    const totals = this.calculateCurrentTotals();
+    try {
+      const res = await window.api.validateDiscount(code, {
+        quantity: totals.totalQty,
+        subtotal: totals.subtotal
+      });
+
+      if (res.valid) {
+        this._quoteState.appliedDiscount = res.rule;
+        this._quoteState.discountStatus = { success: true, message: res.message };
+      } else {
+        this._quoteState.appliedDiscount = res.rule || null;
+        this._quoteState.discountStatus = { success: false, message: res.error || `Coupon '${code}' not eligible` };
+      }
+    } catch (err) {
+      this._quoteState.discountStatus = { success: false, message: err.message };
+    }
+
+    this.renderQuotationBuilder();
+  },
+
+  async saveQuotation(actionStatus = 'quotation') {
+    const state = this._quoteState;
+    if (!state) return;
+
+    if (!state.selectedCustomerId) {
+      alert('Please select or create a customer account.');
+      return;
+    }
+    if (!state.selectedPlanId) {
+      alert('Please select a recurring billing plan.');
+      return;
+    }
+    if (state.lines.length === 0) {
+      alert('Please add at least one line item.');
+      return;
+    }
+
+    const totals = this.calculateCurrentTotals();
+
+    const payload = {
+      customerId: state.selectedCustomerId,
+      planId: state.selectedPlanId,
+      paymentTerms: state.paymentTerms,
+      status: actionStatus, // 'draft' | 'quotation' | 'active'
+      discountCode: state.appliedDiscount ? state.appliedDiscount.code : null,
+      discountId: state.appliedDiscount ? state.appliedDiscount.id : null,
+      totalAmount: totals.grandTotal,
+      lines: state.lines.map(l => ({
+        productId: l.productId,
+        variantId: l.variantId || null,
+        quantity: l.quantity,
+        unitPrice: l.unitPrice
+      }))
+    };
+
+    try {
+      const result = await window.api.createQuotation(payload);
+      const isQuote = ['draft', 'quotation'].includes(actionStatus);
+      const alertMsg = isQuote
+        ? `Quotation ${result.subNumber} successfully created in ${actionStatus.toUpperCase()} status!\nTotal Amount: $${Number(result.totalAmount).toFixed(2)}`
+        : `Subscription ${result.subNumber} activated successfully!\nNext Recurring Billing Date: Today\nRecurring Total: $${Number(result.totalAmount).toFixed(2)}`;
+
+      alert(alertMsg);
+      this.init();
+    } catch (err) {
+      alert('Failed to save quotation: ' + err.message);
+    }
+  },
+
+  showQuickAddCustomerModal() {
+    const existingModal = document.getElementById('quick-customer-modal');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'quick-customer-modal';
+    modal.style.cssText = `
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6);
+      display: flex; align-items: center; justify-content: center; z-index: 10000;
+      backdrop-filter: blur(4px);
+    `;
+
+    modal.innerHTML = `
+      <div style="background: #fff; width: 100%; max-width: 440px; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+          <h3 style="font-size: 18px; font-weight: 800; color: #1e293b; margin: 0;">Quick-Create Customer</h3>
+          <button onclick="document.getElementById('quick-customer-modal').remove()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: #94a3b8;">✕</button>
+        </div>
+        <form id="quick-customer-form" onsubmit="app.submitQuickCustomer(event)">
+          <div style="margin-bottom: 14px;">
+            <label class="form-label">Company / Account Name *</label>
+            <input type="text" id="qc-company" required class="form-control" placeholder="e.g. Acme Corporation" />
+          </div>
+          <div style="margin-bottom: 14px;">
+            <label class="form-label">Contact Person Name</label>
+            <input type="text" id="qc-contact" class="form-control" placeholder="e.g. Wile E. Coyote" />
+          </div>
+          <div style="margin-bottom: 20px;">
+            <label class="form-label">Billing Email Address *</label>
+            <input type="email" id="qc-email" required class="form-control" placeholder="billing@company.com" />
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" onclick="document.getElementById('quick-customer-modal').remove()" class="btn-action-draft" style="padding: 8px 16px;">Cancel</button>
+            <button type="submit" class="btn-action-send" style="padding: 8px 18px;">Create &amp; Select</button>
+          </div>
+        </form>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  },
+
+  async submitQuickCustomer(e) {
+    e.preventDefault();
+    const companyName = document.getElementById('qc-company').value.trim();
+    const contactName = document.getElementById('qc-contact').value.trim();
+    const email = document.getElementById('qc-email').value.trim();
+
+    try {
+      const res = await window.api.createCustomer({ companyName, contactName, email });
+      const newCustomer = res.customer;
+
+      if (this._quoteState) {
+        this._quoteState.customers.push({
+          id: newCustomer.id,
+          name: newCustomer.name,
+          email: newCustomer.email,
+          company_name: companyName
+        });
+        this._quoteState.selectedCustomerId = newCustomer.id;
+      }
+
+      document.getElementById('quick-customer-modal')?.remove();
+      this.renderQuotationBuilder();
+    } catch (err) {
+      alert('Failed to create customer: ' + err.message);
+    }
   }
 
 };

@@ -15,9 +15,10 @@
     "db:generate": "prisma generate",
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
-    "test": "tsx tests/unit/auth.test.ts && tsx tests/unit/pricing.test.ts && tsx tests/integration/auth-e2e.test.ts",
+    "test": "tsx tests/unit/auth.test.ts && tsx tests/unit/pricing.test.ts && tsx tests/unit/quotation-builder.test.ts && tsx tests/integration/auth-e2e.test.ts",
     "test:auth": "tsx tests/unit/auth.test.ts",
     "test:pricing": "tsx tests/unit/pricing.test.ts",
+    "test:quotes": "tsx tests/unit/quotation-builder.test.ts",
     "test:integration": "tsx tests/integration/auth-e2e.test.ts"
   },
   "dependencies": {

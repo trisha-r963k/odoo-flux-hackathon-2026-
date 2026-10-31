@@ -74,7 +74,17 @@ async function main() {
     },
   });
 
-  // Customer Account with CustomerProfile
+  const sales = await prisma.user.create({
+    data: {
+      email: 'sales@brightloop.com',
+      name: 'Alex Rivera (Sales Ops)',
+      passwordHash: staffPasswordHash,
+      role: 'STAFF',
+      isActive: true,
+    },
+  });
+
+  // Customer Account with CustomerProfile (Shopmate Retail Corp)
   const customer = await prisma.user.create({
     data: {
       email: 'customer@shopmate.com',
@@ -101,10 +111,38 @@ async function main() {
     },
   });
 
+  // Customer Account for Acme Corp (Hackathon Scene 4)
+  const acmeCustomer = await prisma.user.create({
+    data: {
+      email: 'billing@acmecorp.com',
+      name: 'Wile E. Coyote',
+      passwordHash: customerPasswordHash,
+      role: 'CUSTOMER',
+      isActive: true,
+      customerProfile: {
+        create: {
+          companyName: 'Acme Corp',
+          contactName: 'Wile E. Coyote',
+          phone: '+1 (555) 987-6543',
+          billingStreet: '100 Desert Bluffs Way',
+          billingCity: 'Flagstaff',
+          billingState: 'AZ',
+          billingZip: '86001',
+          billingCountry: 'United States',
+          taxIdentifier: 'US-112233445',
+        },
+      },
+    },
+    include: {
+      customerProfile: true,
+    },
+  });
+
   console.log('✅ Seeded Users:');
   console.log(`   Admin:    ${admin.email} [ADMIN]`);
-  console.log(`   Staff:    ${staff.email} [STAFF]`);
+  console.log(`   Staff:    ${staff.email}, ${sales.email} [STAFF]`);
   console.log(`   Customer: ${customer.email} [CUSTOMER] -> Profile: ${customer.customerProfile?.companyName}`);
+  console.log(`   Customer: ${acmeCustomer.email} [CUSTOMER] -> Profile: ${acmeCustomer.customerProfile?.companyName}`);
 
   // 4. Seed Products & Variants (Obj 2 spec)
   const cloudErp = await prisma.product.create({

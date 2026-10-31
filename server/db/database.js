@@ -176,6 +176,8 @@ function seedDatabase(force = false) {
 
   insertUser.run('usr_admin_1', 'Alex Rivera (Admin)', 'admin@brightloop.com', 'scrypt:admin', 'admin');
   insertUser.run('usr_staff_1', 'Sarah Chen (Sales Ops)', 'staff@brightloop.com', 'scrypt:staff', 'staff');
+  insertUser.run('usr_staff_2', 'Alex Rivera (Sales Ops)', 'sales@brightloop.com', 'scrypt:staff', 'staff');
+  insertUser.run('usr_cust_acme', 'Acme Corp', 'billing@acmecorp.com', 'scrypt:customer', 'customer');
   insertUser.run('usr_cust_1', 'Shopmate Retail Corp', 'customer@shopmate.com', 'scrypt:customer', 'customer');
   insertUser.run('usr_cust_2', 'Apex Logistics Inc', 'billing@apexlogistics.com', 'scrypt:customer', 'customer');
   insertUser.run('usr_cust_3', 'Nexus Media Labs', 'contact@nexusmedialabs.com', 'scrypt:customer', 'customer');
@@ -185,7 +187,7 @@ function seedDatabase(force = false) {
     INSERT INTO products (id, name, product_type, cost_price, sales_price, notes)
     VALUES (?, ?, ?, ?, ?, ?)
   `);
-  insertProd.run('prod_erp', 'Brightloop Enterprise ERP', 'software', 120.0, 499.0, 'Core business management and subscription suite');
+  insertProd.run('prod_erp', 'Brightloop Cloud ERP', 'software', 400.0, 1200.0, 'Core enterprise resource planning module');
   insertProd.run('prod_crm', 'Omni CRM & Lead Tracker', 'software', 40.0, 199.0, 'Customer relationship module');
   insertProd.run('prod_support', '24/7 Dedicated SLA Support', 'service', 100.0, 300.0, 'Priority engineering response');
 
@@ -193,9 +195,10 @@ function seedDatabase(force = false) {
     INSERT INTO product_variants (id, product_id, variant_name, price_extra)
     VALUES (?, ?, ?, ?)
   `);
-  // Choosing the Odoo brand adds 560 to the price!
+  // Choosing the Odoo brand adds 560 to the price! (1200 + 560 = 1760/unit)
   insertVariant.run('var_odoo_brand', 'prod_erp', 'Brand Edition: Odoo Enterprise', 560.0);
-  insertVariant.run('var_std_brand', 'prod_erp', 'Brand Edition: Standard Edition', 0.0);
+  insertVariant.run('var_std_brand', 'prod_erp', 'Brand Edition: Standard Cloud', 0.0);
+  insertVariant.run('var_ent_brand', 'prod_erp', 'Brand Edition: Enterprise Dedicated', 850.0);
   insertVariant.run('var_cloud_host', 'prod_crm', 'Deployment: Managed Cloud Cluster', 85.0);
 
   // 3. Seed Plans
@@ -203,8 +206,8 @@ function seedDatabase(force = false) {
     INSERT INTO plans (id, name, billing_frequency, price, min_quantity, start_date, end_date, auto_close_on_expiry, can_pause, can_renew)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
-  insertPlan.run('plan_monthly_pro', 'Professional Monthly', 'monthly', 499.0, 1, '2026-01-01', '2027-12-31', 1, 1, 1);
-  insertPlan.run('plan_yearly_ent', 'Enterprise Yearly Contract', 'yearly', 4990.0, 5, '2026-01-01', '2028-12-31', 1, 1, 1);
+  insertPlan.run('plan_monthly_pro', 'Monthly Pro', 'monthly', 1760.0, 1, '2026-01-01', '2027-12-31', 0, 1, 1);
+  insertPlan.run('plan_yearly_ent', 'Annual Enterprise', 'yearly', 18000.0, 5, '2026-01-01', '2028-12-31', 0, 1, 1);
   insertPlan.run('plan_weekly_starter', 'Weekly Agile Pilot', 'weekly', 149.0, 1, '2026-01-01', '2026-12-31', 1, 1, 1);
 
   // 4. Seed Quotation Template
@@ -219,6 +222,7 @@ function seedDatabase(force = false) {
     INSERT INTO discount_rules (id, code, discount_type, value, min_quantity, min_purchase, start_date, end_date, usage_limit, times_used, applied_to)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
+  insertDiscount.run('disc_odu20', 'ODU20', 'percentage', 20.0, 5, 0.0, '2026-01-01', '2027-12-31', 100, 0, 'all');
   insertDiscount.run('disc_hackathon15', 'FLUX2026', 'percentage', 15.0, 1, 200.0, '2026-01-01', '2026-12-31', 50, 4, 'all');
   insertDiscount.run('disc_fixed100', 'SAVE100', 'fixed', 100.0, 1, 500.0, '2026-01-01', '2026-12-31', 20, 2, 'all');
 
@@ -237,8 +241,8 @@ function seedDatabase(force = false) {
   // Active Sub 2 (Yearly)
   insertSub.run('sub_2', 'SUB-2026-0002', 'usr_cust_2', 'plan_yearly_ent', 'active', '2026-03-15', '2027-03-15', '2026-11-15', 'Net 30', null, 4990.0);
 
-  // In Quotation Sub 3
-  insertSub.run('sub_3', 'SUB-2026-0003', 'usr_cust_3', 'plan_monthly_pro', 'quotation', '2026-11-01', '2027-11-01', '2026-11-01', 'Immediate Payment', null, 499.0);
+  // In Quotation Sub 3 (Demonstrating QT-2026-XXXX numbering for quotations)
+  insertSub.run('sub_3', 'QT-2026-0003', 'usr_cust_3', 'plan_monthly_pro', 'quotation', '2026-11-01', '2027-11-01', '2026-11-01', 'Immediate Payment', null, 499.0);
 
   // Subscription Lines (demonstrating Variant Pricing: 499 + 560 Odoo Variant = 1059)
   const insertLine = db.prepare(`
