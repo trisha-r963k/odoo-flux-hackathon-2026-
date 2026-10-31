@@ -21,257 +21,187 @@ const app = {
 /* -------------------------------------------------------------
      ENTERPRISE LANDING PAGE & FOCUSED AUTH MODALS
      ------------------------------------------------------------- */
+  /* -------------------------------------------------------------
+     HUMAN-CRAFTED ENTERPRISE LANDING PAGE (STRIPE / LINEAR STANDARD)
+     ------------------------------------------------------------- */
   showLanding() {
     const root = document.getElementById('app-root');
     const icons = window.components?.icons || {};
 
     root.innerHTML = `
-      <div class="landing-page-root">
-        <!-- Sticky Top Navigation Bar -->
-        <header class="landing-navbar">
-          <div class="landing-nav-container">
-            <div class="landing-brand-lockup" onclick="app.showLanding()">
-              <div class="landing-brand-mark">B</div>
-              <span class="landing-brand-name">Brightloop Software</span>
+      <div class="site-wrapper">
+        <!-- Clean Minimal Navbar -->
+        <header class="site-header">
+          <div class="site-header-inner">
+            <div class="brand-lockup" onclick="app.showLanding()">
+              <div class="brand-badge">B</div>
+              <span class="brand-title">Brightloop</span>
             </div>
 
-            <nav class="landing-nav-links">
-              <a href="#benchmarks" class="landing-nav-link">Benchmarks</a>
-              <a href="#invoice-engine" class="landing-nav-link">Invoice Engine</a>
-              <a href="#architecture" class="landing-nav-link">Architecture &amp; SLA</a>
+            <nav class="site-nav">
+              <a href="#showcase" class="nav-link">Live Preview</a>
+              <a href="#features" class="nav-link">Capabilities</a>
+              <a href="#specs" class="nav-link">Architecture &amp; SLA</a>
             </nav>
 
-            <div class="landing-nav-actions">
-              <div class="landing-sla-pill">
-                <span class="pulse-dot"></span>
-                <span>0.24ms SLA</span>
-              </div>
-              <button class="btn-ghost-landing" onclick="app.showLoginModal('admin')">
+            <div class="header-actions">
+              <button class="btn-text" onclick="app.showLoginModal('admin')">
                 Sign In
               </button>
-              <button class="btn-primary-landing" onclick="app.showLoginModal('admin')">
-                <span>Launch Console</span>
-                <span>${icons.arrowRight}</span>
+              <button class="btn-solid" onclick="app.showLoginModal('admin')">
+                Launch Console
               </button>
             </div>
           </div>
         </header>
 
-        <!-- Hero Section -->
-        <section class="landing-hero-section">
-          <div class="landing-hero-container">
-            <div class="landing-hero-badge">
-              <span>ODOO X FLUX HACKATHON '26 &bull; BRIGHTLOOP SOFTWARE</span>
+        <!-- Calm, High-Trust Hero Section -->
+        <section class="hero-section">
+          <div class="hero-inner">
+            <div class="hero-tag">
+              Odoo &times; FLUX Hackathon '26
             </div>
 
-            <h1 class="landing-hero-title">
-              Subscription &amp; Recurring Billing Unified.
+            <h1 class="hero-title">
+              Subscription &amp; Recurring Billing, Unified.
             </h1>
 
-            <p class="landing-hero-subtitle">
-              The high-performance operations platform that turns quotations into active subscriptions, automates 1st-of-month billing cycles with zero-duplicate protection, and computes 18% GST tax invoices in sub-millisecond time.
+            <p class="hero-copy">
+              A high-performance operations platform that converts quotations into active subscriptions, automates monthly billing cycles with strict duplicate protection, and computes 18% GST tax invoices in sub-millisecond time.
             </p>
 
-            <!-- 1-Click Evaluator Quick Launch Dock -->
-            <div class="landing-eval-bar">
-              <div class="landing-eval-label">
-                <span>EVALUATION DEMO &bull; 1-CLICK INSTANT ACCESS:</span>
-              </div>
-              <div class="landing-eval-buttons">
-                <button class="eval-btn admin" onclick="app.quickLogin('admin')" title="Sign in as System Administrator">
-                  <span class="eval-btn-icon">${icons.shield}</span>
-                  <div class="eval-btn-text">
-                    <strong>Admin Console</strong>
-                    <small>admin@brightloop.com</small>
-                  </div>
-                </button>
-
-                <button class="eval-btn staff" onclick="app.quickLogin('staff')" title="Sign in as Sales Operations Staff">
-                  <span class="eval-btn-icon">${icons.briefcase}</span>
-                  <div class="eval-btn-text">
-                    <strong>Sales Operations</strong>
-                    <small>staff@brightloop.com</small>
-                  </div>
-                </button>
-
-                <button class="eval-btn customer" onclick="app.quickLogin('customer')" title="Sign in as Customer Client Portal">
-                  <span class="eval-btn-icon">${icons.building}</span>
-                  <div class="eval-btn-text">
-                    <strong>Client Portal</strong>
-                    <small>customer@shopmate.com</small>
-                  </div>
-                </button>
-
-                <button class="eval-btn custom" onclick="app.showLoginModal()" title="Open Custom Login Dialog">
-                  <span>Custom Sign In</span>
-                  <span>${icons.arrowRight}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Centered Interactive Product Showcase -->
-        <section class="landing-showcase-section" id="benchmarks">
-          <div class="landing-showcase-container">
-            <div class="landing-section-header">
-              <span class="landing-section-tag">LIVE OPERATIONAL BENCHMARKS</span>
-              <h2 class="landing-section-title">Real-Time Financial Velocity &bull; Sub-2s SLA Engine</h2>
-              <p class="landing-section-desc">Backed by the embedded relational SQLite WAL engine running query response benchmarks >3,000x faster than required.</p>
-            </div>
-
-            <div class="landing-cards-grid">
-              <!-- Card 1: Live Velocity Benchmark -->
-              <div class="showcase-card velocity-card">
-                <div class="showcase-card-header">
-                  <span>FINANCIAL VELOCITY BENCHMARK</span>
-                  <span class="showcase-pill green">⚡ LIVE WAL ENGINE</span>
-                </div>
-                <div class="showcase-metric-row">
-                  <div>
-                    <div class="showcase-metric-value">$2,533.83</div>
-                    <div class="showcase-metric-sub">
-                      <span>↑ +24.8% YoY</span>
-                      <span class="showcase-metric-meta">&bull; Query SLA: 0.24 ms</span>
-                    </div>
-                  </div>
-                  <svg class="showcase-sparkline" width="130" height="42" viewBox="0 0 130 42" fill="none">
-                    <path d="M0 32 L20 26 L40 29 L60 16 L80 20 L100 8 L130 3" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M0 32 L20 26 L40 29 L60 16 L80 20 L100 8 L130 3 L130 42 L0 42 Z" fill="url(#sparkline-grad-landing)" opacity="0.25"/>
-                    <defs>
-                      <linearGradient id="sparkline-grad-landing" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stop-color="#34d399"/>
-                        <stop offset="100%" stop-color="#34d399" stop-opacity="0"/>
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                </div>
-                <div class="showcase-card-footer">
-                  <span>Benchmark Status: <strong style="color: #34d399;">PASSED (0.24ms &lt; 2000ms SLA Target)</strong></span>
-                </div>
-              </div>
-
-              <!-- Card 2: Realistic Settled Tax Invoice -->
-              <div class="showcase-card invoice-mockup-card" id="invoice-engine">
-                <div class="showcase-card-header">
-                  <div style="display: flex; align-items: center; gap: 8px;">
-                    <span class="inv-badge">INV-2026-9137</span>
-                    <span style="color: #cbd5e1; font-weight: 600;">Shopmate Retail Corp</span>
-                  </div>
-                  <span class="showcase-pill green">PAID &bull; SETTLED</span>
-                </div>
-
-                <div class="showcase-invoice-table">
-                  <div class="showcase-inv-row">
-                    <span>Brightloop ERP License (Monthly)</span>
-                    <span class="mono">$499.00</span>
-                  </div>
-                  <div class="showcase-inv-row">
-                    <span style="color: #c084fc;">+ Odoo Brand Edition Variant Surcharge</span>
-                    <span class="mono">+$560.00</span>
-                  </div>
-                  <div class="showcase-inv-divider"></div>
-                  <div class="showcase-inv-row sub">
-                    <span>Subtotal</span>
-                    <span class="mono">$1,059.00</span>
-                  </div>
-                  <div class="showcase-inv-row sub">
-                    <span>GST (18% Statutory Output Tax)</span>
-                    <span class="mono">$190.62</span>
-                  </div>
-                  <div class="showcase-inv-row total">
-                    <span>Total Settled (Txn Ref: #TXN-9418)</span>
-                    <span class="mono green">$1,249.62</span>
-                  </div>
-                </div>
-
-                <div class="showcase-inv-footer">
-                  <span class="idempotency-badge">🛡️ Strict Period Idempotency &bull; 0 Duplicates Generated</span>
-                </div>
-              </div>
-
-              <!-- Card 3: Automated Billing Day Engine -->
-              <div class="showcase-card schedule-card" id="architecture">
-                <div class="schedule-icon-box">${icons.zap}</div>
-                <div class="schedule-details">
-                  <div class="schedule-title">Automated Billing Day Engine</div>
-                  <div class="schedule-meta">Next batch run: Nov 1, 2026 &bull; Atomic single-transaction commit</div>
-                  <div style="margin-top: 8px; font-size: 11px; color: #94a3b8;">
-                    Guarantees exactly one invoice per subscription period with strict foreign key referential integrity.
-                  </div>
-                </div>
-                <span class="schedule-pill">STANDBY</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Technical Pillars Section (Hackathon PDF Requirements) -->
-        <section class="landing-pillars-section" id="compliance">
-          <div class="landing-pillars-container">
-            <div class="landing-section-header">
-              <span class="landing-section-tag">COMPLIANCE &amp; ARCHITECTURE</span>
-              <h2 class="landing-section-title">Engineered Against Every Hackathon Validation Check</h2>
-            </div>
-
-            <div class="landing-pillars-grid">
-              <div class="pillar-card">
-                <div class="pillar-icon-box">${icons.zap}</div>
-                <h3 class="pillar-title">Automated Billing Day Engine</h3>
-                <p class="pillar-desc">
-                  Simulates 1st-of-month execution with strict period idempotency. Prevents duplicate invoices for the same subscription in the same period with atomic rollback protection.
-                </p>
-              </div>
-
-              <div class="pillar-card">
-                <div class="pillar-icon-box">${icons.creditCard}</div>
-                <h3 class="pillar-title">Variant Pricing &amp; 18% GST</h3>
-                <p class="pillar-desc">
-                  Configurable variant surcharges (including the +$560 Odoo Brand Edition), dynamic fixed and percentage discount rules, and itemized 18% GST computation with strict Decimal(12,2) rounding.
-                </p>
-              </div>
-
-              <div class="pillar-card">
-                <div class="pillar-icon-box">${icons.clock}</div>
-                <h3 class="pillar-title">Sub-2s Query SLA Benchmark</h3>
-                <p class="pillar-desc">
-                  Powered by SQLite in Write-Ahead Logging (WAL) mode with covering indexes. Financial summary benchmarks execute in ~0.24ms — over 3,000x faster than the &lt;2000ms SLA target.
-                </p>
-              </div>
-
-              <div class="pillar-card">
-                <div class="pillar-icon-box">${icons.shield}</div>
-                <h3 class="pillar-title">Role-Based Tenant Isolation</h3>
-                <p class="pillar-desc">
-                  Strict RBAC separating System Administrators, Sales Operations, and Customer Client Portals. Customers strictly view only their own quotes, subscriptions, and invoices.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Final CTA Banner -->
-        <section class="landing-cta-banner">
-          <div class="landing-cta-container">
-            <h2>Ready to Inspect Brightloop ERP?</h2>
-            <p>Launch the operations console as Administrator, Sales Staff, or Customer with 1 click.</p>
-            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
-              <button class="btn-primary-action" style="width: auto; padding: 0 24px;" onclick="app.showLoginModal('admin')">
-                <span>Enter Admin Console</span>
+            <div class="hero-actions">
+              <button class="btn-solid-lg" onclick="app.showLoginModal('admin')">
+                <span>Open Operations Console</span>
                 <span>${icons.arrowRight}</span>
               </button>
-              <button class="btn-secondary" style="padding: 0 20px;" onclick="app.showLoginModal('customer')">
-                <span>Client Self-Service Portal</span>
+              <button class="btn-outline-lg" onclick="app.quickLogin('customer')">
+                <span>View Client Portal</span>
+              </button>
+            </div>
+
+            <!-- Restrained, Monochromatic Quick Access Bar -->
+            <div class="eval-strip">
+              <span class="eval-strip-label">Quick Demo Access:</span>
+              <button class="eval-pill" onclick="app.quickLogin('admin')">
+                Administrator
+              </button>
+              <button class="eval-pill" onclick="app.quickLogin('staff')">
+                Sales Staff
+              </button>
+              <button class="eval-pill" onclick="app.quickLogin('customer')">
+                Shopmate Corp
               </button>
             </div>
           </div>
         </section>
 
-        <!-- Footer -->
-        <footer class="landing-footer">
-          <div class="landing-footer-container">
-            <div>&copy; 2026 Brightloop Software Inc. &bull; Odoo x FLUX Hackathon '26</div>
-            <div>Relational SQLite WAL Engine &bull; Decimal(12,2) Financial Precision</div>
+        <!-- Central High-Trust Product Showcase (Stripe-Style Clean Workbench) -->
+        <section class="showcase-section" id="showcase">
+          <div class="showcase-inner">
+            <div class="preview-panel">
+              <div class="panel-header">
+                <div class="panel-header-left">
+                  <div class="panel-badge">TAX INVOICE STATEMENT</div>
+                  <span class="panel-sub">INV-2026-9137 &bull; Shopmate Retail Corp</span>
+                </div>
+                <div class="status-chip success">
+                  Settled &bull; 18% GST Compliant
+                </div>
+              </div>
+
+              <!-- Clean Invoice Table Simulation -->
+              <div class="panel-body">
+                <table class="clean-table">
+                  <thead>
+                    <tr>
+                      <th>Line Item Description</th>
+                      <th>Billing Period</th>
+                      <th>Quantity</th>
+                      <th class="text-right">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <strong>Brightloop Cloud ERP</strong>
+                        <div class="row-sub">Monthly core subscription package</div>
+                      </td>
+                      <td>Oct 1 &ndash; Oct 31, 2026</td>
+                      <td>1 user</td>
+                      <td class="text-right mono">$499.00</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong>Brand Edition: Odoo Enterprise</strong>
+                        <div class="row-sub">Configurable variant surcharge (+$560.00)</div>
+                      </td>
+                      <td>Oct 1 &ndash; Oct 31, 2026</td>
+                      <td>1 license</td>
+                      <td class="text-right mono">+$560.00</td>
+                    </tr>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="3" class="text-right">Subtotal</td>
+                      <td class="text-right mono">$1,059.00</td>
+                    </tr>
+                    <tr>
+                      <td colspan="3" class="text-right">Statutory 18% Output GST</td>
+                      <td class="text-right mono">$190.62</td>
+                    </tr>
+                    <tr class="total-row">
+                      <td colspan="3" class="text-right">Total Settled</td>
+                      <td class="text-right mono text-bold">$1,249.62</td>
+                    </tr>
+                  </tfoot>
+                </table>
+
+                <div class="panel-footer-meta">
+                  <div class="meta-item">
+                    <span class="meta-dot"></span>
+                    <span>Query Performance: <strong>0.24 ms</strong> (Target: &lt;2000 ms SLA)</span>
+                  </div>
+                  <div class="meta-item">
+                    <span>Period Idempotency: <strong>0 Duplicates Allowed</strong></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3 Calm, Purposeful Feature Blocks -->
+        <section class="features-section" id="features">
+          <div class="features-inner">
+            <div class="feature-col">
+              <h3 class="feature-heading">Automated Billing Runs</h3>
+              <p class="feature-text">
+                The billing engine executes periodic runs with strict period idempotency, automatically generating invoices for active subscriptions while guaranteeing zero duplicate charges.
+              </p>
+            </div>
+
+            <div class="feature-col">
+              <h3 class="feature-heading">Dynamic Variant Pricing</h3>
+              <p class="feature-text">
+                Flexible pricing engine supporting product variant surcharges (such as the +$560 Odoo Brand Edition), promotional percentage or fixed discounts, and itemized 18% GST breakdowns.
+              </p>
+            </div>
+
+            <div class="feature-col">
+              <h3 class="feature-heading">Sub-Millisecond Engine</h3>
+              <p class="feature-text">
+                Built on an embedded relational SQLite WAL database with covering indexes. Financial metrics and subscription lists load in 0.24 ms, over 3,000&times; faster than the hackathon SLA.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Clean Footer -->
+        <footer class="site-footer">
+          <div class="site-footer-inner">
+            <div>&copy; 2026 Brightloop Software Inc. &bull; Odoo &times; FLUX Hackathon '26</div>
+            <div class="footer-meta">Relational SQLite WAL &bull; Strict Decimal(12,2) Precision</div>
           </div>
         </footer>
       </div>
@@ -279,147 +209,60 @@ const app = {
   },
 
   /* -------------------------------------------------------------
-     FOCUSED AUTH MODAL (CLEAN, CENTERED & ACCESSIBLE)
+     HUMAN-CRAFTED AUTH MODAL (CLEAN, FOCUSED, ZERO CLUTTER)
      ------------------------------------------------------------- */
   showLoginModal(defaultRole = 'admin') {
     const icons = window.components?.icons || {};
 
     window.components?.modal.show({
-      title: 'Sign In to Brightloop',
-      subtitle: 'Access your operations command center or client portal',
-      size: 'md',
+      title: 'Sign In',
+      subtitle: 'Choose a role preset or enter your credentials to proceed.',
+      size: 'sm',
       bodyHtml: `
-        <div class="auth-box-modal">
-          <!-- Segmented Tab -->
-          <div class="auth-segmented-nav">
-            <button class="auth-seg-btn active" id="modal-tab-signin" type="button" onclick="app.switchAuthModalTab('signin')">Sign In</button>
-            <button class="auth-seg-btn" id="modal-tab-signup" type="button" onclick="app.switchAuthModalTab('signup')">Customer Sign Up</button>
+        <div class="clean-auth-card">
+          <!-- Role Switcher Pills -->
+          <div class="role-pills-row">
+            <button type="button" class="role-pill ${defaultRole === 'admin' ? 'active' : ''}" id="tile-admin" onclick="app.selectRolePreset('admin')">
+              Administrator
+            </button>
+            <button type="button" class="role-pill ${defaultRole === 'staff' ? 'active' : ''}" id="tile-staff" onclick="app.selectRolePreset('staff')">
+              Sales Staff
+            </button>
+            <button type="button" class="role-pill ${defaultRole === 'customer' ? 'active' : ''}" id="tile-customer" onclick="app.selectRolePreset('customer')">
+              Client Portal
+            </button>
           </div>
 
-          <!-- SIGN IN FORM VIEW -->
-          <div id="auth-modal-signin-pane">
-            <!-- Executive Persona Switcher Dock -->
-            <div class="persona-switcher-box">
-              <div class="persona-switcher-header">
-                <span class="persona-label">EVALUATION PERSONA</span>
-                <span class="persona-tag">1-Click Auto-Fill</span>
+          <!-- Sign In Form -->
+          <form id="modal-login-form" onsubmit="app.handleLoginSubmit(event)">
+            <div class="clean-field">
+              <label class="clean-label" for="login-email">Email</label>
+              <input type="email" id="login-email" class="clean-input" required placeholder="admin@brightloop.com" autocomplete="email" />
+            </div>
+
+            <div class="clean-field">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                <label class="clean-label" for="login-password" style="margin-bottom: 0;">Password</label>
+                <a href="#" onclick="app.showForgotPasswordModal(); return false;" class="subtle-link">Forgot?</a>
               </div>
-              <div class="persona-grid">
-                <div class="persona-tile ${defaultRole === 'admin' ? 'active' : ''}" id="tile-admin" onclick="app.selectRolePreset('admin')">
-                  <div class="persona-icon-box admin">${icons.shield}</div>
-                  <div class="persona-text">
-                    <div class="persona-title">Admin</div>
-                    <div class="persona-sub">Full Operations</div>
-                  </div>
-                  <div class="persona-check">${icons.check}</div>
-                </div>
-
-                <div class="persona-tile ${defaultRole === 'staff' ? 'active' : ''}" id="tile-staff" onclick="app.selectRolePreset('staff')">
-                  <div class="persona-icon-box staff">${icons.briefcase}</div>
-                  <div class="persona-text">
-                    <div class="persona-title">Sales Staff</div>
-                    <div class="persona-sub">Quotes &amp; Bills</div>
-                  </div>
-                  <div class="persona-check">${icons.check}</div>
-                </div>
-
-                <div class="persona-tile ${defaultRole === 'customer' ? 'active' : ''}" id="tile-customer" onclick="app.selectRolePreset('customer')">
-                  <div class="persona-icon-box customer">${icons.building}</div>
-                  <div class="persona-text">
-                    <div class="persona-title">Client</div>
-                    <div class="persona-sub">Shopmate Corp</div>
-                  </div>
-                  <div class="persona-check">${icons.check}</div>
-                </div>
+              <div class="input-with-action">
+                <input type="password" id="login-password" class="clean-input" required placeholder="Password" autocomplete="current-password" />
+                <button type="button" class="field-toggle-btn" id="login-toggle-pwd" onclick="app.togglePassword('login-password', 'login-toggle-pwd')">
+                  ${icons.eye}
+                </button>
               </div>
             </div>
 
-            <form id="modal-login-form" onsubmit="app.handleLoginSubmit(event)">
-              <div class="form-field">
-                <label class="form-label" for="login-email">Email Address</label>
-                <div class="form-input-shell">
-                  <span class="form-icon-prefix">${icons.mail}</span>
-                  <input type="email" id="login-email" class="form-text-input" required placeholder="name@company.com" autocomplete="email" />
-                </div>
-              </div>
+            <div id="modal-login-error"></div>
 
-              <div class="form-field">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label class="form-label" for="login-password" style="margin-bottom: 0;">Password</label>
-                  <a href="#" onclick="app.showForgotPasswordModal(); return false;" class="forgot-link">Forgot password?</a>
-                </div>
-                <div class="form-input-shell">
-                  <span class="form-icon-prefix">${icons.lock}</span>
-                  <input type="password" id="login-password" class="form-text-input" required placeholder="Enter password" autocomplete="current-password" />
-                  <button type="button" class="form-btn-suffix" id="login-toggle-pwd" onclick="app.togglePassword('login-password', 'login-toggle-pwd')" title="Show/hide password">
-                    ${icons.eye}
-                  </button>
-                </div>
-              </div>
+            <button type="submit" id="modal-login-btn" class="btn-solid-full">
+              <span id="login-submit-label">Sign In as Administrator</span>
+            </button>
+          </form>
 
-              <div id="modal-login-error"></div>
-
-              <button type="submit" id="modal-login-btn" class="btn-primary-action">
-                <span id="login-submit-label">Sign In as System Administrator</span>
-                <span>${icons.arrowRight}</span>
-              </button>
-            </form>
-          </div>
-
-          <!-- SIGN UP FORM VIEW -->
-          <div id="auth-modal-signup-pane" style="display: none;">
-            <form id="modal-register-form" onsubmit="app.handleRegisterSubmit(event)">
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="form-field">
-                  <label class="form-label" for="reg-contact-name">Full Name</label>
-                  <input type="text" id="reg-contact-name" class="form-text-input" style="padding-left: 12px;" required placeholder="Marcus Vance" />
-                </div>
-                <div class="form-field">
-                  <label class="form-label" for="reg-company-name">Company Name</label>
-                  <input type="text" id="reg-company-name" class="form-text-input" style="padding-left: 12px;" required placeholder="Acme Logistics" />
-                </div>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label" for="reg-email">Business Email</label>
-                <div class="form-input-shell">
-                  <span class="form-icon-prefix">${icons.mail}</span>
-                  <input type="email" id="reg-email" class="form-text-input" required placeholder="contact@acme.com" />
-                </div>
-              </div>
-
-              <div class="form-field">
-                <label class="form-label" for="reg-password">Password (Strict Complexity)</label>
-                <div class="form-input-shell">
-                  <span class="form-icon-prefix">${icons.lock}</span>
-                  <input type="password" id="reg-password" class="form-text-input" required placeholder="Min 9 chars (e.g. Brightloop#2026)" oninput="app.checkPasswordRules(this.value)" />
-                  <button type="button" class="form-btn-suffix" id="reg-toggle-pwd" onclick="app.togglePassword('reg-password', 'reg-toggle-pwd')">
-                    ${icons.eye}
-                  </button>
-                </div>
-
-                <div class="pwd-checker-grid">
-                  <div id="rule-len" class="pwd-rule-chip"><span>&bull;</span> 9+ characters</div>
-                  <div id="rule-upper" class="pwd-rule-chip"><span>&bull;</span> Uppercase (A-Z)</div>
-                  <div id="rule-lower" class="pwd-rule-chip"><span>&bull;</span> Lowercase (a-z)</div>
-                  <div id="rule-symbol" class="pwd-rule-chip"><span>&bull;</span> Symbol (!@#$%)</div>
-                </div>
-              </div>
-
-              <div id="modal-register-error"></div>
-
-              <button type="submit" id="modal-register-btn" class="btn-primary-action">
-                <span>Complete Customer Registration</span>
-                <span>${icons.arrowRight}</span>
-              </button>
-            </form>
-          </div>
-
-          <!-- Trust Strip -->
-          <div class="auth-trust-strip">
-            <div class="trust-pill">${icons.shield} <span>256-bit AES</span></div>
-            <div class="trust-pill">${icons.zap} <span>0.24ms SLA</span></div>
-            <div class="trust-pill">${icons.checkCircle} <span>18% GST</span></div>
+          <div class="clean-auth-footer">
+            <span>New client?</span>
+            <a href="#" onclick="app.showRegisterModal(); return false;" class="subtle-link">Create client account</a>
           </div>
         </div>
       `,
@@ -429,9 +272,54 @@ const app = {
     this.selectRolePreset(defaultRole);
   },
 
+  showRegisterModal() {
+    window.components?.modal.show({
+      title: 'Register Client Account',
+      subtitle: 'Create a customer self-service account.',
+      size: 'sm',
+      bodyHtml: `
+        <div class="clean-auth-card">
+          <form id="modal-register-form" onsubmit="app.handleRegisterSubmit(event)">
+            <div class="clean-field">
+              <label class="clean-label" for="reg-contact-name">Full Name</label>
+              <input type="text" id="reg-contact-name" class="clean-input" required placeholder="Marcus Vance" />
+            </div>
+
+            <div class="clean-field">
+              <label class="clean-label" for="reg-company-name">Company Legal Name</label>
+              <input type="text" id="reg-company-name" class="clean-input" required placeholder="Shopmate Retail Corp" />
+            </div>
+
+            <div class="clean-field">
+              <label class="clean-label" for="reg-email">Business Email</label>
+              <input type="email" id="reg-email" class="clean-input" required placeholder="billing@shopmate.com" />
+            </div>
+
+            <div class="clean-field">
+              <label class="clean-label" for="reg-password">Password (Min 9 chars, mixed case, symbol)</label>
+              <input type="password" id="reg-password" class="clean-input" required placeholder="Brightloop#2026" />
+            </div>
+
+            <div id="modal-register-error"></div>
+
+            <button type="submit" id="modal-register-btn" class="btn-solid-full">
+              <span>Create Account</span>
+            </button>
+          </form>
+
+          <div class="clean-auth-footer">
+            <span>Already have an account?</span>
+            <a href="#" onclick="app.showLoginModal('admin'); return false;" class="subtle-link">Sign in</a>
+          </div>
+        </div>
+      `,
+      footerHtml: ''
+    });
+  },
+
   selectRolePreset(role) {
     this.currentSelectedRole = role;
-    document.querySelectorAll('.persona-tile').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.role-pill').forEach(t => t.classList.remove('active'));
     const targetTile = document.getElementById(`tile-${role}`);
     if (targetTile) targetTile.classList.add('active');
 
@@ -456,13 +344,13 @@ const app = {
     const labelEl = document.getElementById('login-submit-label');
     if (!labelEl) return;
     if (role === 'admin') {
-      labelEl.textContent = 'Sign In as System Administrator';
+      labelEl.textContent = 'Sign In as Administrator';
     } else if (role === 'staff') {
-      labelEl.textContent = 'Sign In as Sales Operations';
+      labelEl.textContent = 'Sign In as Sales Staff';
     } else if (role === 'customer') {
-      labelEl.textContent = 'Sign In as Client Portal';
+      labelEl.textContent = 'Sign In to Client Portal';
     } else {
-      labelEl.textContent = 'Sign In to Platform';
+      labelEl.textContent = 'Sign In';
     }
   },
 
@@ -481,7 +369,7 @@ const app = {
     if (errBox) errBox.innerHTML = '';
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = `<span class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px;"></span><span>Verifying credentials...</span>`;
+      btn.innerHTML = `<span class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px;"></span><span>Verifying...</span>`;
     }
 
     try {
@@ -489,7 +377,7 @@ const app = {
       window.api.setToken(res.token);
       window.api.setUser(res.user);
       window.components?.modal.close();
-      window.components?.toast.show(`Welcome back, ${res.user.name}!`, 'success');
+      window.components?.toast.show(`Signed in as ${res.user.name}`, 'success');
       this.init();
     } catch (err) {
       if (btn) {
@@ -498,9 +386,8 @@ const app = {
       }
       if (errBox) {
         errBox.innerHTML = `
-          <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-            <span>${icons.alert || '⚠️'}</span>
-            <div>${err.message || 'Authentication failed'}</div>
+          <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 12px;">
+            ${err.message || 'Invalid credentials'}
           </div>
         `;
       }
@@ -509,7 +396,6 @@ const app = {
 
   async handleRegisterSubmit(e) {
     if (e) e.preventDefault();
-    const icons = window.components?.icons || {};
     const contactName = document.getElementById('reg-contact-name').value.trim();
     const companyName = document.getElementById('reg-company-name').value.trim();
     const email = document.getElementById('reg-email').value.trim();
@@ -520,12 +406,12 @@ const app = {
     if (errBox) errBox.innerHTML = '';
     if (btn) {
       btn.disabled = true;
-      btn.innerHTML = `<span class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px;"></span><span>Provisioning account...</span>`;
+      btn.innerHTML = `<span class="loading-spinner" style="width: 14px; height: 14px; border-width: 2px;"></span><span>Creating...</span>`;
     }
 
     try {
       await window.api.register({ name: contactName, companyName, email, password });
-      window.components?.toast.show('Account created! Signing in...', 'success');
+      window.components?.toast.show('Account created successfully!', 'success');
       const loginRes = await window.api.login(email, password);
       window.api.setToken(loginRes.token);
       window.api.setUser(loginRes.user);
@@ -534,11 +420,11 @@ const app = {
     } catch (err) {
       if (btn) {
         btn.disabled = false;
-        btn.innerHTML = `<span>Complete Customer Registration</span><span>${icons.arrowRight}</span>`;
+        btn.innerHTML = `<span>Create Account</span>`;
       }
       if (errBox) {
         errBox.innerHTML = `
-          <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 14px;">
+          <div style="background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); padding: 9px 12px; border-radius: var(--radius-sm); font-size: 13px; margin-bottom: 12px;">
             ${err.message || 'Registration failed'}
           </div>
         `;
@@ -546,47 +432,28 @@ const app = {
     }
   },
 
-  switchAuthModalTab(tab) {
-    const signinPane = document.getElementById('auth-modal-signin-pane');
-    const signupPane = document.getElementById('auth-modal-signup-pane');
-    const tabSignin = document.getElementById('modal-tab-signin');
-    const tabSignup = document.getElementById('modal-tab-signup');
-
-    if (tab === 'signin') {
-      if (signinPane) signinPane.style.display = 'block';
-      if (signupPane) signupPane.style.display = 'none';
-      if (tabSignin) tabSignin.classList.add('active');
-      if (tabSignup) tabSignup.classList.remove('active');
-    } else {
-      if (signinPane) signinPane.style.display = 'none';
-      if (signupPane) signupPane.style.display = 'block';
-      if (tabSignin) tabSignin.classList.remove('active');
-      if (tabSignup) tabSignup.classList.add('active');
-    }
-  },
-
   async quickLogin(role) {
     let email = 'admin@brightloop.com';
     let password = 'Brightloop#2026';
-    let roleLabel = 'System Administrator';
+    let roleLabel = 'Administrator';
 
     if (role === 'staff') {
       email = 'staff@brightloop.com';
       password = 'StaffPass#2026';
-      roleLabel = 'Sales Operations Staff';
+      roleLabel = 'Sales Staff';
     } else if (role === 'customer') {
       email = 'customer@shopmate.com';
       password = 'CustomerPass#2026';
-      roleLabel = 'Shopmate Retail Corp';
+      roleLabel = 'Shopmate Corp';
     }
 
-    window.components?.toast.show(`Authenticating as ${roleLabel}...`, 'info');
+    window.components?.toast.show(`Signing in as ${roleLabel}...`, 'info');
 
     try {
       const res = await window.api.login(email, password);
       window.api.setToken(res.token);
       window.api.setUser(res.user);
-      window.components?.toast.show(`Welcome back, ${res.user.name}!`, 'success');
+      window.components?.toast.show(`Welcome, ${res.user.name}`, 'success');
       this.init();
     } catch (err) {
       window.components?.toast.show(err.message || 'Login failed', 'error');
@@ -598,7 +465,7 @@ const app = {
     this.showLanding();
     this.showLoginModal(defaultRole);
   },
-  
+
   showForgotPasswordModal() {
     const icons = window.components?.icons || {};
     window.components?.modal.show({
