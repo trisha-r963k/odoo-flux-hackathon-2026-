@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 579.6379999999999 873.9999999999999" width="579.6379999999999" height="873.9999999999999" style="--bg:#18181B;--fg:#F4F4F5;--line:#71717A;--muted:#A1A1AA;--surface:#27272A;--border:#3F3F46;background:var(--bg)">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap');
+  text { font-family: 'Inter', system-ui, sans-serif; }
+  svg {
+    /* Derived from --bg and --fg (overridable via --line, --accent, etc.) */
+    --_text:          var(--fg);
+    --_text-sec:      var(--muted, color-mix(in srgb, var(--fg) 60%, var(--bg)));
+    --_text-muted:    var(--muted, color-mix(in srgb, var(--fg) 40%, var(--bg)));
+    --_text-faint:    color-mix(in srgb, var(--fg) 25%, var(--bg));
+    --_line:          var(--line, color-mix(in srgb, var(--fg) 50%, var(--bg)));
+    --_arrow:         var(--accent, color-mix(in srgb, var(--fg) 85%, var(--bg)));
+    --_node-fill:     var(--surface, color-mix(in srgb, var(--fg) 3%, var(--bg)));
+    --_node-stroke:   var(--border, color-mix(in srgb, var(--fg) 20%, var(--bg)));
+    --_group-fill:    var(--bg);
+    --_group-hdr:     color-mix(in srgb, var(--fg) 5%, var(--bg));
+    --_inner-stroke:  color-mix(in srgb, var(--fg) 12%, var(--bg));
+    --_key-badge:     color-mix(in srgb, var(--fg) 10%, var(--bg));
+  }
+</style>
+<defs>
+  <marker id="arrowhead" markerWidth="8" markerHeight="5" refX="7" refY="2.5" orient="auto">
+    <polygon points="0 0, 8 2.5, 0 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+  <marker id="arrowhead-start" markerWidth="8" markerHeight="5" refX="1" refY="2.5" orient="auto-start-reverse">
+    <polygon points="8 0, 0 2.5, 8 5" fill="var(--_arrow)" stroke="var(--_arrow)" stroke-width="0.75" stroke-linejoin="round" />
+  </marker>
+</defs>
+<polyline class="edge" data-from="_start" data-to="Draft" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Sales Rep creates quote from template" points="268.49999999999994,68 268.49999999999994,184.3" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Draft" data-to="Quotation" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Review products, variants &amp; taxes -&gt; Send to client" points="268.49999999999994,221.2 268.49999999999994,337.5" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Quotation" data-to="Confirmed" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Client accepts offer" points="268.49999999999994,374.4 268.49999999999994,490.70000000000005" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Confirmed" data-to="Active" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Start date reached / Agreement signed" points="251.62833333333327,527.6 251.62833333333327,563.6 199.7308333333333,563.6 199.7308333333333,631.9 255.3333333333333,631.9 255.3333333333333,643.9" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Active" data-to="Paused" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Customer temporarily halts service" points="248.74999999999994,680.8 248.74999999999994,716.8 126.5,716.8 126.5,785.0999999999999 188.37383333333327,785.0999999999999 188.37383333333327,785.0999999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Paused" data-to="Active" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Resume service" points="217.6711666666666,785.0999999999999 217.6711666666666,785.0999999999999 268.49999999999994,785.0999999999999 268.49999999999994,680.8" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Active" data-to="Closed" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Plan expired (Auto-close) or Cancelled early" points="288.24999999999994,680.8 288.24999999999994,692.8 431.77599999999995,692.8 431.77599999999995,785.0999999999999" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<polyline class="edge" data-from="Active" data-to="Confirmed" data-style="solid" data-arrow-start="false" data-arrow-end="true" data-label="Renewed for next term" points="281.66666666666663,643.9 281.66666666666663,631.9 362.0808333333333,631.9 362.0808333333333,563.6 285.3716666666666,563.6 285.3716666666666,527.6" fill="none" stroke="var(--_line)" stroke-width="1" marker-end="url(#arrowhead)" />
+<g class="edge-label" data-from="_start" data-to="Draft" data-label="Sales Rep creates quote from template">
+  <rect x="170.99999999999994" y="111" width="194.06799999999998" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="268.03399999999993" y="126.15" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Sales Rep creates quote from template</text>
+</g>
+<g class="edge-label" data-from="Draft" data-to="Quotation" data-label="Review products, variants &amp; taxes -&gt; Send to client">
+  <rect x="143.49999999999991" y="264.2" width="249.90399999999994" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="268.4519999999999" y="279.34999999999997" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Review products, variants &amp; taxes -&gt; Send to client</text>
+</g>
+<g class="edge-label" data-from="Quotation" data-to="Confirmed" data-label="Client accepts offer">
+  <rect x="214.99999999999994" y="417.40000000000003" width="106.75000000000003" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="268.37499999999994" y="432.55" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Client accepts offer</text>
+</g>
+<g class="edge-label" data-from="Confirmed" data-to="Active" data-label="Start date reached / Agreement signed">
+  <rect x="101.7308333333333" y="570.6" width="195.85000000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="199.6558333333333" y="585.75" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Start date reached / Agreement signed</text>
+</g>
+<g class="edge-label" data-from="Active" data-to="Paused" data-label="Customer temporarily halts service">
+  <rect x="36" y="723.8" width="180.99999999999997" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="126.49999999999999" y="738.9499999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Customer temporarily halts service</text>
+</g>
+<g class="edge-label" data-from="Paused" data-to="Active" data-label="Resume service">
+  <rect x="220.99999999999991" y="723.8" width="94.27600000000001" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="268.1379999999999" y="738.9499999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Resume service</text>
+</g>
+<g class="edge-label" data-from="Active" data-to="Closed" data-label="Plan expired (Auto-close) or Cancelled early">
+  <rect x="319.27599999999995" y="699.8" width="224.36199999999997" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="431.45699999999994" y="714.9499999999999" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Plan expired (Auto-close) or Cancelled early</text>
+</g>
+<g class="edge-label" data-from="Active" data-to="Confirmed" data-label="Renewed for next term">
+  <rect x="301.5808333333333" y="570.6" width="120.41200000000002" height="30.3" rx="2" ry="2" fill="var(--bg)" stroke="var(--_inner-stroke)" stroke-width="1" />
+  <text x="361.78683333333333" y="585.75" text-anchor="middle" font-size="11" font-weight="400" fill="var(--_text-sec)" dy="3.8499999999999996">Renewed for next term</text>
+</g>
+<g class="node" data-id="_start" data-label="" data-shape="state-start">
+  <circle cx="268.49999999999994" cy="54" r="12" fill="var(--_text)" stroke="none" />
+</g>
+<g class="node" data-id="Draft" data-label="Draft" data-shape="rounded">
+  <rect x="233.44599999999994" y="184.3" width="70.108" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="268.49999999999994" y="202.75" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Draft</text>
+</g>
+<g class="node" data-id="Quotation" data-label="Quotation" data-shape="rounded">
+  <rect x="220.10799999999995" y="337.5" width="96.78399999999999" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="268.49999999999994" y="355.95" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Quotation</text>
+</g>
+<g class="node" data-id="Confirmed" data-label="Confirmed" data-shape="rounded">
+  <rect x="217.88499999999996" y="490.70000000000005" width="101.22999999999999" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="268.49999999999994" y="509.15000000000003" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Confirmed</text>
+</g>
+<g class="node" data-id="Active" data-label="Active" data-shape="rounded">
+  <rect x="228.99999999999994" y="643.9" width="79" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="268.49999999999994" y="662.35" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Active</text>
+</g>
+<g class="node" data-id="Paused" data-label="Paused" data-shape="rounded">
+  <rect x="159.07649999999995" y="785.0999999999999" width="87.892" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="203.02249999999995" y="803.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Paused</text>
+</g>
+<g class="node" data-id="Closed" data-label="Closed" data-shape="rounded">
+  <rect x="390.05299999999994" y="785.0999999999999" width="83.446" height="36.900000000000006" rx="6" ry="6" fill="var(--_node-fill)" stroke="var(--_node-stroke)" stroke-width="0.75" />
+  <text x="431.77599999999995" y="803.55" text-anchor="middle" font-size="13" font-weight="500" fill="var(--_text)" dy="4.55">Closed</text>
+</g>
+</svg>
