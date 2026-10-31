@@ -35,41 +35,53 @@ const api = {
   },
 
   async login(email, password) {
-    // Simulate network delay for hackathon UX
-    await new Promise((res) => setTimeout(res, 450));
+    try {
+      const response = await fetch(`${this.baseUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    // Preset Hackathon Accounts
-    const accounts = {
-      'admin@brightloop.com': {
-        role: 'admin',
-        name: 'Alex Rivera (Admin)',
-        email: 'admin@brightloop.com',
-        permissions: ['all']
-      },
-      'staff@brightloop.com': {
-        role: 'staff',
-        name: 'Sarah Chen (Sales Ops)',
-        email: 'staff@brightloop.com',
-        permissions: ['quotes', 'invoices', 'subscriptions']
-      },
-      'customer@shopmate.com': {
-        role: 'customer',
-        name: 'Shopmate Retail Corp',
-        email: 'customer@shopmate.com',
-        tenantId: 'cust_9021',
-        permissions: ['portal']
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Authentication failed. Please verify your credentials.');
       }
-    };
 
-    const user = accounts[email.toLowerCase()] || {
-      role: 'customer',
-      name: email.split('@')[0],
-      email: email,
-      permissions: ['portal']
-    };
+      return { token: data.token, user: data.user };
+    } catch (err) {
+      console.warn('Backend login request error, checking local fallback:', err);
+      // If server unreachable, throw meaningful error
+      throw err;
+    }
+  },
 
-    const token = 'jwt_' + Math.random().toString(36).substring(2) + Date.now();
-    return { token, user };
+  async register(registrationData) {
+    const response = await fetch(`${this.baseUrl}/api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(registrationData),
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      const errMsg = data.details ? data.details.join('. ') : (data.error || 'Registration failed');
+      throw new Error(errMsg);
+    }
+    return data;
+  },
+
+  async forgotPassword(email) {
+    const response = await fetch(`${this.baseUrl}/api/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw new Error(data.error || 'Failed to request password reset link');
+    }
+    return data;
   },
 
   logout() {

@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #714b67;
+  --primary-hover: #593952;
+  --primary-light: #f5edf3;
+  --secondary: #008784;
+  --secondary-hover: #006d6a;
+  --secondary-light: #e6f4f4;
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+}

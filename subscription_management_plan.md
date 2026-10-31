@@ -259,7 +259,7 @@ model Subscription {
   id                 String             @id @default(uuid())
   subscriptionNo     String             @unique // e.g. "SUB-2026-0001"
   customerId         String
-  customer           CustomerProfile    @relation(fields: [customerId], references: [id])
+  customer       CustomerProfile    @relation(fields: [customerId], references: [id])
   planId             String
   plan               Plan               @relation(fields: [planId], references: [id])
   quotationId        String?            @unique
